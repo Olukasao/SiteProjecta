@@ -1,0 +1,257 @@
+/* FOOTER BASE */
+.footer {
+  background: #ffffff;
+  color: #111;
+  margin-top: 80px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* CONTAINER */
+.footer-wrapper {
+  max-width: 1200px;
+  margin: auto;
+  padding: 60px 20px;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+
+/* COLUNAS */
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* LOGO */
+.logo-col img {
+  width: 200px;
+  margin-bottom: 10px;
+}
+
+/* TEXTO */
+.logo-col p {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* TITULOS */
+.footer-col h4 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  position: relative;
+  color: #111;
+}
+
+/* LINHA ABAIXO */
+.footer-col h4::after {
+  content: "";
+  display: block;
+  width: 30px;
+  height: 2px;
+  background: #f59e0b;
+  margin-top: 6px;
+}
+
+/* LINKS */
+.footer-col a {
+  text-decoration: none;
+  color: #555;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.footer-col a:hover {
+  color: #111;
+  transform: translateX(3px);
+}
+
+/* CONTATO */
+.footer-col p {
+  font-size: 14px;
+  color: #555;
+}
+
+/* RODAPÉ FINAL */
+.footer-bottom {
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+  padding: 20px;
+  font-size: 13px;
+  color: #777;
+}
+
+/* 🔥 TABLET */
+@media (max-width: 900px) {
+  .footer-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+}
+
+/* 🔥 MOBILE */
+@media (max-width: 600px) {
+  .footer-wrapper {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .footer-col {
+    align-items: center;
+  }
+
+  .footer-col h4::after {
+    margin: 6px auto 0;
+  }
+
+  .footer-col a:hover {
+    transform: none;
+  }
+}
+
+/* CERTIFICAÇÕES */
+.footer-certifications {
+  border-top: 1px solid #e5e7eb;
+  margin-top: 40px;
+  padding: 40px 20px;
+
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  flex-wrap: wrap;
+}
+
+/* BLOCO */
+.cert-block {
+  text-align: center;
+}
+
+/* TITULO */
+.cert-block h5 {
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: #777;
+  margin-bottom: 15px;
+}
+
+/* LOGOS */
+.cert-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* IMAGENS */
+.cert-logos img {
+  height: 80px;
+  object-fit: contain;
+  opacity: 0.9;
+  transition: 0.3s;
+}
+
+.cert-logos img:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+/* RESPONSIVO */
+@media (max-width: 600px) {
+  .footer-certifications {
+    gap: 40px;
+  }
+
+  .cert-logos img {
+    height: 30px;
+  }
+}
+
+/* REDES SOCIAIS */
+.socials {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.socials a {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f3f4f6;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.socials a:hover {
+  background: #f59e0b;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* CONTATO */
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* NEWSLETTER */
+.newsletter-box {
+  display: flex;
+  margin-top: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.newsletter-box input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+}
+
+.newsletter-box button {
+  background: #f59e0b;
+  border: none;
+  padding: 0 15px;
+  cursor: pointer;
+  color: white;
+}
+
+/* WHATSAPP FLOAT */
+.whatsapp-float {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+
+  background: #25d366;
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  z-index: 3000;
+
+  transition: 0.3s;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.1);
+}

@@ -1,0 +1,287 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.home {
+    font-family: "Inter", Arial, sans-serif;
+    background: #f9fafb;
+    color: #111;
+}
+
+/* HERO */
+.hero {
+    height: 80vh;
+    min-height: 500px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 20px 40px;
+
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+        url("../assets/home-header.jpg");
+
+    background-size: cover;
+    background-position: center;
+}
+
+/* CAIXA HERO */
+.hero-box {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.9);
+
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+
+    max-width: 520px;
+    width: 100%;
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+/* TEXTO */
+.hero-box h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.hero-box p {
+    color: #555;
+    margin-bottom: 25px;
+}
+
+/* BUSCA */
+.search {
+    display: flex;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.search input {
+    flex: 1;
+    border: none;
+    padding: 14px;
+    outline: none;
+    font-size: 14px;
+}
+
+.search button {
+    background: #f59e0b;
+    border: none;
+    padding: 0 20px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.search button:hover {
+    background: #d97706;
+}
+
+/* SEÇÕES */
+.section {
+    padding: 70px 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+.section h2 {
+    font-size: 24px;
+    margin-bottom: 25px;
+}
+
+/* FILTROS */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.filters input,
+.filters select {
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
+
+    outline: none;
+    transition: 0.2s;
+}
+
+/* DISTRIBUIÇÃO INTELIGENTE */
+.filters input {
+    flex: 2;
+    min-width: 180px;
+}
+
+.filters select {
+    flex: 1;
+    min-width: 120px;
+}
+
+.filters button {
+    background: #111;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* GRID */
+.properties-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+/* CARD */
+.property-card {
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+}
+
+.property-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* IMG */
+.property-card img {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+}
+
+/* INFO */
+.property-info {
+    padding: 16px;
+}
+
+.property-info h3 {
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+/* PREÇO */
+.price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+}
+
+/* DETALHES */
+.property-info span {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    margin-top: 4px;
+}
+
+/* LOCAL */
+.location {
+    font-size: 13px;
+    color: #888;
+    margin-top: 6px;
+}
+
+/* 🔥 TABLET */
+@media (max-width: 900px) {
+    .hero {
+        height: auto;
+        padding: 120px 20px 60px;
+    }
+
+    .hero-box {
+        padding: 30px;
+    }
+
+    .hero-box h1 {
+        font-size: 28px;
+    }
+
+    .properties-grid {
+        gap: 20px;
+    }
+}
+
+/* 🔥 MOBILE */
+@media (max-width: 600px) {
+
+    /* HERO */
+    .hero {
+        padding: 100px 15px 40px;
+    }
+
+    .hero-box {
+        padding: 25px 20px;
+        border-radius: 16px;
+    }
+
+    .hero-box h1 {
+        font-size: 22px;
+    }
+
+    .hero-box p {
+        font-size: 14px;
+    }
+
+    /* BUSCA STACK */
+    .search {
+        flex-direction: column;
+    }
+
+    .search input {
+        padding: 12px;
+    }
+
+    .search button {
+        width: 100%;
+        padding: 12px;
+    }
+
+    /* FILTROS STACK */
+    .filters {
+        flex-direction: column;
+    }
+
+    .filters input,
+    .filters select,
+    .filters button {
+        width: 100%;
+    }
+
+    /* GRID 1 COLUNA */
+    .properties-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* CARD */
+    .property-card img {
+        height: 160px;
+    }
+}

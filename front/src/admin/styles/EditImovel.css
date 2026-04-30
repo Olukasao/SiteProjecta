@@ -1,0 +1,176 @@
+/* =========================
+   CONTAINER
+========================= */
+.edit-container {
+    max-width: 900px;
+    margin: 120px auto;
+    padding: 20px;
+}
+
+/* =========================
+   FORM
+========================= */
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   GALERIA PRINCIPAL
+========================= */
+.gallery-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 15px;
+}
+
+.main-photo {
+    width: 100%;
+    height: 400px;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.main-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* thumbs estilo Airbnb */
+.thumbs-airbnb {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.thumbs-airbnb img {
+    width: 100%;
+    height: 95px;
+    object-fit: cover;
+    border-radius: 12px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: 0.2s;
+}
+
+.thumbs-airbnb img:hover {
+    transform: scale(1.03);
+    opacity: 1;
+}
+
+.active-thumb {
+    border: 2px solid #f59e0b;
+    opacity: 1 !important;
+}
+
+/* =========================
+   IMAGENS EDITOR GRID
+========================= */
+.images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.image-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #eee;
+    background: #fff;
+    transition: 0.2s;
+}
+
+.image-card:hover {
+    transform: scale(1.02);
+    border-color: #f59e0b;
+}
+
+.mini-img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    display: block;
+}
+
+/* botão X */
+.remove-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+
+    width: 24px;
+    height: 24px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+
+    font-size: 12px;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-btn:hover {
+    background: #ef4444;
+}
+
+/* =========================
+   ADD BTN
+========================= */
+.add-btn {
+    background: #3b82f6;
+    color: white;
+
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+/* =========================
+   GRID CAMPOS
+========================= */
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+/* =========================
+   INPUTS
+========================= */
+.edit-form input,
+.edit-form textarea,
+.edit-form select {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+/* botão salvar */
+.edit-form button[type="submit"] {
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #f59e0b;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+}

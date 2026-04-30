@@ -1,0 +1,288 @@
+/* =========================
+   HERO
+========================= */
+.page-hero {
+    padding: 120px 20px 40px;
+    text-align: center;
+    background: #f9fafb;
+}
+
+.page-hero h1 {
+    font-size: 32px;
+}
+
+/* =========================
+   LAYOUT PRINCIPAL
+========================= */
+.imoveis-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+
+    width: 100%;
+    max-width: 1400px;
+
+    margin-left: 0;
+    margin-right: auto;
+
+    padding: 40px 20px 40px 0;
+}
+
+/* =========================
+   SIDEBAR (FILTROS)
+========================= */
+.filters-sidebar {
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.filters-sidebar h3 {
+    margin-bottom: 10px;
+}
+
+.filters-sidebar input,
+.filters-sidebar select {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    outline: none;
+    width: 100%;
+}
+
+.filters-sidebar button {
+    margin-top: 10px;
+    background: #f59e0b;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.filters-sidebar button:hover {
+    opacity: 0.9;
+}
+
+/* =========================
+   DIFERENCIAIS (MODERNO)
+========================= */
+.filtro-grupo {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filtro-titulo {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* GRID */
+.filtro-diferenciais {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+
+    max-height: 220px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* SCROLL */
+.filtro-diferenciais::-webkit-scrollbar {
+    width: 6px;
+}
+
+.filtro-diferenciais::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 10px;
+}
+
+/* CARD */
+.check-card {
+    cursor: pointer;
+}
+
+/* ESCONDE INPUT */
+.check-card input {
+    display: none;
+}
+
+/* CONTEÚDO */
+.check-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    font-size: 13px;
+    color: #374151;
+
+    padding: 8px 10px;
+    border-radius: 10px;
+
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+
+    transition: 0.2s;
+}
+
+/* HOVER */
+.check-card:hover .check-content {
+    background: #f3f4f6;
+}
+
+/* ATIVO */
+.check-card input:checked + .check-content {
+    background: #f59e0b;
+    color: #fff;
+    border-color: #f59e0b;
+    transform: scale(1.03);
+}
+
+/* =========================
+   CONTEÚDO
+========================= */
+.imoveis-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.results-info {
+    margin: 20px 0;
+    color: #666;
+}
+
+/* =========================
+   GRID IMÓVEIS
+========================= */
+.properties-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+/* CARD */
+.property-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    transition: 0.2s;
+}
+
+.property-card:hover {
+    transform: translateY(-5px);
+}
+
+/* IMAGEM */
+.card-image {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* INFO */
+.property-info {
+    padding: 12px;
+}
+
+.property-info h3 {
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+.price {
+    color: #f59e0b;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.location {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+/* FEATURES */
+.features {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: #444;
+    margin-bottom: 8px;
+}
+
+.features span {
+    background: #f3f4f6;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+/* DESCRIÇÃO */
+.desc {
+    font-size: 12px;
+    color: #777;
+}
+
+/* =========================
+   RESPONSIVO
+========================= */
+
+/* TABLET */
+@media (max-width: 900px) {
+    .imoveis-layout {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+
+    .filters-sidebar {
+        position: relative;
+        top: 0;
+    }
+
+    .filtro-diferenciais {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+    .filtro-diferenciais {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .check-content {
+        font-size: 12px;
+        padding: 7px;
+    }
+}
+
+/* MOBILE PEQUENO */
+@media (max-width: 400px) {
+    .filtro-diferenciais {
+        grid-template-columns: 1fr;
+    }
+}

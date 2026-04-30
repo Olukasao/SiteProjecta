@@ -1,0 +1,234 @@
+:root {
+  --primary: #f5a623;
+  --primary-dark: #e59e1f;
+  --gray-dark: #4a4a4a;
+  --gray-light: #9e9e9e;
+  --bg-light: #f8fafc;
+}
+
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* BODY */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  height: 100vh;
+
+  background: white;
+}
+
+/* CONTAINER */
+.login-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* LADO ESQUERDO */
+.login-left {
+  flex: 1;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* EFEITO DE FUNDO */
+.login-left::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+}
+
+/* TEXTO ESQUERDA */
+.left-content {
+  color: white;
+  text-align: center;
+  z-index: 2;
+  max-width: 400px;
+}
+
+.left-content h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  line-height: 1.2;
+}
+
+.left-content h1 span {
+  background: linear-gradient(45deg, #ffffff, #f1f1f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.left-content p {
+  font-size: 1rem;
+  opacity: 0.9;
+  line-height: 1.5;
+}
+
+/* LADO DIREITO */
+.login-right {
+  flex: 1;
+  background: var(--bg-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* CARD LOGIN (MENOR) */
+.form-container {
+  width: 100%;
+  max-width: 360px;
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* HEADER */
+.form-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* LOGO MENOR */
+.logo {
+  width: 140px;
+  height: auto;
+  margin-bottom: 0.8rem;
+}
+
+/* TÍTULO */
+.form-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-dark);
+  margin-bottom: 0.3rem;
+}
+
+.form-header p {
+  color: var(--gray-light);
+  font-size: 0.9rem;
+}
+
+/* ERRO */
+.error-message {
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 0.8rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  border-left: 4px solid #dc2626;
+  font-size: 0.85rem;
+}
+
+/* FORM */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* INPUT */
+.input-group {
+  position: relative;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  transition: 0.3s;
+  background: var(--bg-light);
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.2);
+}
+
+.input-group input::placeholder {
+  color: #b0b0b0;
+}
+
+/* BOTÃO */
+.login-button {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 0.3rem;
+}
+
+.login-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(245, 166, 35, 0.4);
+  filter: brightness(1.05);
+}
+
+.login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* FOOTER */
+.form-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.form-footer span {
+  color: var(--gray-light);
+  font-size: 0.8rem;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .login-left {
+    height: 35vh;
+    padding: 1.5rem;
+  }
+
+  .left-content h1 {
+    font-size: 1.8rem;
+  }
+
+  .form-container {
+    margin: 1.5rem;
+    padding: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+}

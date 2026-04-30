@@ -1,0 +1,135 @@
+.login-page {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f8fafc;
+    /* mesmo fundo clean do header */
+    font-family: Arial, sans-serif;
+
+    position: relative;
+}
+
+/* BOTÃO VOLTAR */
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 8px 14px;
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(0, 0, 0, 0.06);
+
+    cursor: pointer;
+    transition: 0.2s;
+
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.back-btn:hover {
+    transform: translateX(-3px);
+    color: #f59e0b;
+}
+
+/* CARD (MESMO GLASS DO HEADER) */
+.login-card {
+    width: 380px;
+    padding: 32px;
+
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(14px);
+
+    border-radius: 18px;
+
+    border: 1px solid rgba(0, 0, 0, 0.06);
+
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+
+
+    animation: fadeIn 0.4s ease;
+}
+
+/* HEADER */
+.login-card h1 {
+    font-size: 22px;
+    text-align: center;
+    color: #1f2937;
+}
+
+.login-card p {
+    font-size: 13px;
+    color: #6b7280;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.login-card label {
+     
+}
+
+/* INPUTS */
+.login-card input {
+    width: 100%;
+    padding: 12px;
+
+    margin-bottom: 12px;
+
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+
+    background: #fff;
+    outline: none;
+
+    transition: 0.2s;
+}
+
+.login-card input:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
+
+/* BOTÃO (PADRÃO DO HEADER) */
+.login-card button {
+    width: 100%;
+    padding: 12px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: white;
+
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: 0.2s;
+
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.25);
+}
+
+.login-card button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.35);
+}
+
+/* ANIMAÇÃO */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

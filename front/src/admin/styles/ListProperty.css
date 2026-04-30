@@ -1,0 +1,260 @@
+/* CONTAINER */
+.container-list {
+  padding: 30px;
+  background: #f9fafb;
+  min-height: 100vh;
+  font-family: "Inter", sans-serif;
+}
+
+.container-list h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #111827;
+}
+
+/* FILTROS */
+.filtros {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.filtros input,
+.filtros select {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  outline: none;
+  font-size: 14px;
+  background: #fff;
+  transition: 0.2s;
+}
+
+.filtros input {
+  flex: 1;
+  min-width: 220px;
+}
+
+.filtros input:focus,
+.filtros select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* GRID */
+.grid-imoveis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* CARD */
+.card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  transition: 0.25s;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* IMAGEM */
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+/* INFO */
+.info {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info h3 {
+  font-size: 16px;
+  color: #111827;
+  font-weight: 600;
+}
+
+/* LOCAL */
+.local {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* PREÇO */
+.preco {
+  font-size: 18px;
+  font-weight: bold;
+  color: #16a34a;
+  margin-top: 5px;
+}
+
+/* BOTÕES */
+.acoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.acoes button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+/* EDITAR */
+.editar {
+  background: #2563eb;
+  color: white;
+}
+
+.editar:hover {
+  background: #1d4ed8;
+}
+
+/* EXCLUIR */
+.excluir {
+  background: #ef4444;
+  color: white;
+}
+
+.excluir:hover {
+  background: #dc2626;
+}
+
+/* EMPTY */
+.empty {
+  text-align: center;
+  color: #6b7280;
+  grid-column: 1/-1;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+  .container-list {
+    padding: 20px;
+  }
+
+  .card img {
+    height: 160px;
+  }
+}
+
+.properties-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* CARD */
+.property-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transition: 0.25s;
+}
+
+.property-card:hover {
+  transform: translateY(-5px);
+}
+
+/* IMAGEM */
+.card-image {
+  height: 180px;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* INFO */
+.property-info {
+  padding: 12px;
+}
+
+.property-info h3 {
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+
+.price {
+  color: #f59e0b;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+/* FEATURES */
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.features span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f3f4f6;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+/* ACTIONS */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  flex: 1;
+  padding: 6px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.edit {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.delete {
+  background: #ef4444;
+  color: #fff;
+}
