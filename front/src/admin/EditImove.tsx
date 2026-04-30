@@ -7,7 +7,7 @@ export default function EditImovel() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    
+    const [files, setFiles] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 

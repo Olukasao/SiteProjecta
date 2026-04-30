@@ -37,9 +37,6 @@ body {
 }
 
 
-
-
-
 /* ── Loading ─────────────────────────────────────────── */
 .loading-screen {
   display: flex;
@@ -80,7 +77,6 @@ body {
 
   /* 🔥 FUNDO PREMIUM (glass) */
   background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(18px);
 
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 20px;
@@ -164,7 +160,6 @@ body {
   font-size: 12px;
   padding: 4px 10px;
   border-radius: 20px;
-  backdrop-filter: blur(4px);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s;

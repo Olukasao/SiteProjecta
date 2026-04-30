@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Home,
@@ -9,7 +9,7 @@ import {
     Ruler,
     Eye,
     Save,
-    Upload
+    Upload,
 } from "lucide-react";
 import "./styles/CadProperty.css";
 import { api } from "../services/api";
@@ -212,6 +212,11 @@ export default function CadProperty() {
             .replace(/(\d{5})(\d)/, "$1-$2")
             .slice(0, 9);
     };
+    useEffect(() => {
+        return () => {
+            imagens.forEach((img) => URL.revokeObjectURL(img));
+        };
+    }, [imagens]);
 
     const primeiraImagem = imagens[0] || "https://via.placeholder.com/800x400/6366f1/ffffff?text=Adicione+imagens";
 
@@ -289,42 +294,29 @@ export default function CadProperty() {
                     Cadastrar Imóvel
                 </h2>
 
-                <div className="grid-2">
-                    <div className="input-group">
-                        <select name="tipo" onChange={handleChange} value={form.tipo}>
-                            <option value="casa">
-                                <Home className="w-4 h-4 mr-2 inline" />
-                                Casa
-                            </option>
-                            <option value="apartamento">
-                                <Building2 className="w-4 h-4 mr-2 inline" />
-                                Apartamento
-                            </option>
-                            <option value="terreno">
-                                <MapPin className="w-4 h-4 mr-2 inline" />
-                                Terreno
-                            </option>
-                        </select>
-                    </div>
-
-                    <div className="input-group">
-                        <select name="status" onChange={handleChange} value={form.status}>
-                            <option value="venda">
-                                <Save className="w-4 h-4 mr-2 inline" />
-                                Venda
-                            </option>
-                            <option value="aluguel">
-                                <Home className="w-4 h-4 mr-2 inline" />
-                                Aluguel
-                            </option>
-                        </select>
-                    </div>
+                <div className="input-group">
+                    <label htmlFor="tipo">Tipo do imóvel</label>
+                    <select id="tipo" name="tipo" onChange={handleChange} value={form.tipo}>
+                        <option value="casa">Casa</option>
+                        <option value="apartamento">Apartamento</option>
+                        <option value="terreno">Terreno</option>
+                    </select>
                 </div>
 
                 <div className="input-group">
+                    <label htmlFor="status">Finalidade</label>
+                    <select id="status" name="status" onChange={handleChange} value={form.status}>
+                        <option value="venda">Venda</option>
+                        <option value="aluguel">Aluguel</option>
+                    </select>
+                </div>
+
+                <div className="input-group">
+                    <label htmlFor="nome">Nome do imóvel</label>
                     <input
+                        id="nome"
                         name="nome"
-                        placeholder="Nome do imóvel"
+                        placeholder="Ex: Casa moderna no centro"
                         onChange={handleChange}
                         value={form.nome}
                     />

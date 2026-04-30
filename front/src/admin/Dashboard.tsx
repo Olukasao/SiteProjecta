@@ -1,20 +1,9 @@
-import { useEffect, useState } from "react";
+
 import "./styles/dashboard.css"
 
-import { api } from "../services/api";
+
 
 export default function Dashboard() {
-    const [dados, setDados] = useState({
-        imoveis: 0,
-        clientes: 0,
-        vendas: 0,
-    });
-
-    useEffect(() => {
-        api.get("/dashboard")
-            .then((res) => setDados(res.data))
-            .catch((err) => console.error("Erro dashboard:", err));
-    }, []);
 
     return (
         <div className="admin-container">
@@ -26,17 +15,17 @@ export default function Dashboard() {
                 <div className="cards">
                     <div className="card">
                         <h3>Total de Imóveis</h3>
-                        <p>{dados.imoveis}</p>
+                       
                     </div>
 
                     <div className="card">
                         <h3>Clientes</h3>
-                        <p>{dados.clientes}</p>
+                       
                     </div>
 
                     <div className="card">
                         <h3>Vendas</h3>
-                        <p>{dados.vendas}</p>
+                      
                     </div>
                 </div>
 

@@ -12,3 +12,8 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 app.use("/api",routes);
+
+
+app.listen(porta, () => {
+  console.log("Servidor rodando na porta " + porta );
+});
