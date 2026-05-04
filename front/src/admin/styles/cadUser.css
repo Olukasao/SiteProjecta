@@ -1,0 +1,127 @@
+.cad-container {
+    padding: 10px 20px;
+    font-family: Arial, sans-serif;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+
+    width: 100%;
+}
+.cad-container h2 {
+    font-size: 26px;
+}
+
+/* CARD */
+.cad-form {
+    width: 100%;
+
+    background: #fff;
+    padding: 24px;
+    border-radius: 10px;
+
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* ROW 2 COLUNAS */
+.cad-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* FIELD */
+.cad-field {
+    display: flex;
+    flex-direction: column;
+}
+
+/* LABEL */
+.cad-field label {
+    font-size: 13px;
+    margin-bottom: 5px;
+    color: #374151;
+    font-weight: 500;
+}
+
+/* INPUT E SELECT */
+.cad-field input,
+.cad-field select {
+    padding: 11px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s;
+    background: #fff;
+}
+
+/* FOCUS */
+.cad-field input:focus,
+.cad-field select:focus {
+    border-color: var(--primary);;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* ERRO POR CAMPO */
+.cad-field span {
+    color: #ef4444;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* ALERTAS */
+.cad-error {
+    background: #fee2e2;
+    padding: 10px;
+    color: #b91c1c;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.cad-success {
+    background: #dcfce7;
+    padding: 10px;
+    color: #15803d;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+/* BOTÃO */
+button {
+    margin-top: 10px;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: var(--primary);
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #d57a03;
+}
+
+button:disabled {
+    background: #93c5fd;
+    cursor: not-allowed;
+}
+
+/* RESPONSIVO */
+@media (max-width: 700px) {
+    .cad-row {
+        grid-template-columns: 1fr;
+    }
+
+    .cad-form {
+        padding: 18px;
+    }
+}

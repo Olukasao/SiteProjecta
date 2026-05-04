@@ -44,8 +44,10 @@ const criarImovel = (req, res) => {
     // =========================
     // 🔥 IMAGENS
     // =========================
+    const baseUrl = process.env.BASE_URL;
+
     const imagens = req.files?.map(file =>
-      `http://192.168.1.133:3500/uploads/${file.filename}`
+      `${baseUrl}/uploads/${file.filename}`
     ) || [];
 
     // =========================
@@ -312,10 +314,13 @@ const atualizarImovel = (req, res) => {
       imagens = req.body.imagens;
     }
   }
+  const baseUrl = process.env.BASE_URL;
+
+
 
   if (req.files && req.files.length > 0) {
     imagens = req.files.map(file =>
-      `http://192.168.1.133:3500/uploads/${file.filename}`
+      `${baseUrl}/uploads/${file.filename}`
     );
   }
 

@@ -16,11 +16,6 @@
 }
 
 /* CONTAINER */
-.admin-container {
-  display: flex;
-  height: 100vh;
-  background: var(--bg);
-}
 
 /* SIDEBAR */
 .sidebar {
@@ -95,7 +90,7 @@
 /* CONTENT */
 .admin-content {
   flex: 1;
-  padding: 2rem;
+  padding: 1rem;
   overflow-y: auto;
 }
 

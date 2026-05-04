@@ -1,30 +1,40 @@
-    const express = require("express");
-    const { login } = require("../controllers/authController");
-    const {
-        criarImovel,
-        getImoveis,
-        getImovelById,
-        deletarImovel,
-        atualizarImovel
-    } = require("../controllers/propertyController");
+const express = require("express");
+const { login } = require("../controllers/authController");
+const {
+    criarImovel,
+    getImoveis,
+    getImovelById,
+    deletarImovel,
+    atualizarImovel
+} = require("../controllers/propertyController");
+
+const { getUsers, getUserById, updateUser } = require("../controllers/usersController");
+
+const { authMiddleware } = require("../middlewares/authMiddleware");
+
+const router = express.Router();
+const upload = require("../upload");
 
 
-    const { authMiddleware } = require("../middlewares/authMiddleware");
+router.post("/login", login);
+router.get("/", (req, res) => {
+    res.json({ message: "API rodando 🚀" });
+});
 
-    const router = express.Router();
-    const upload = require("../upload");
+// endpoints imoveis
+router.get("/imoveis", getImoveis);
+router.get("/imovel/:id", getImovelById);
+
+router.post("/imoveis", authMiddleware, upload.array("imagens"), criarImovel);
+router.put("/imoveis/:id", authMiddleware, atualizarImovel);
+
+router.delete("/imoveis/:id", authMiddleware, deletarImovel);
 
 
-    router.post("/login", login);
-    router.get("/",()=>{
-        console.error("Api rodando");
-    })
-    router.get("/imoveis", getImoveis);
-    router.get("/imovel/:id", getImovelById);
+// endpoints usuarios
+router.get("/usuarios/", authMiddleware, getUsers)
+router.get("/usuario/:id", authMiddleware, getUserById)
+router.put("/usuario/update/:id", authMiddleware, updateUser)
 
-    router.post("/imoveis", authMiddleware, upload.array("imagens"), criarImovel);
-    router.put("/imoveis/:id", authMiddleware, atualizarImovel);
 
-    router.delete("/imoveis/:id", authMiddleware, deletarImovel);
-
-    module.exports = router;
+module.exports = router;

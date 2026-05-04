@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../services/api";
 import "./styles/loginAdmin.css";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginAdmin() {
   const [email, setEmail] = useState("");
@@ -8,31 +9,52 @@ export default function LoginAdmin() {
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const navigate = useNavigate();
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
     setErro("");
+
     if (!email || !senha) {
-      return setErro("Preencha todos os campos");
+      setErro("Preencha todos os campos");
+      return;
     }
 
     try {
       setLoading(true);
 
-      const res = await api.post("/login", { email, senha });
+      const { data } = await api.post("/login", {
+        email,
+        senha,
+      });
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      // salvar token e user
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-      window.location.href = "/admin/dashboard";
-    } catch (err) {
-      setErro("Email ou senha inválidos");
+      // 👉 já seta o token no axios automaticamente
+      api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+
+      // 👉 navegação sem reload
+      navigate("/admin/dashboard");
+
+    } catch (err: any) {
+      console.error(err);
+
+      if (err.response?.status === 401) {
+        setErro("Email ou senha inválidos");
+      } else {
+        setErro("Erro ao conectar com o servidor");
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="login-container">
-      {/* LADO ESQUERDO - 50% */}
+
+      {/* LEFT */}
       <div className="login-left">
         <div className="left-content">
           <h1>
@@ -43,25 +65,26 @@ export default function LoginAdmin() {
         </div>
       </div>
 
-      {/* LADO DIREITO - 50% */}
+      {/* RIGHT */}
       <div className="login-right">
         <div className="form-container">
+
           <div className="form-header">
-        
             <h2>Login Admin</h2>
             <p>Acesse sua área administrativa</p>
           </div>
 
           {erro && <div className="error-message">{erro}</div>}
 
-          <form className="login-form" onSubmit={(e) => e.preventDefault()}>
+          {/* FORM CORRETO */}
+          <form className="login-form" onSubmit={handleLogin}>
+            
             <div className="input-group">
               <input
                 type="email"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
               />
             </div>
 
@@ -71,29 +94,23 @@ export default function LoginAdmin() {
                 placeholder="Senha"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
-                required
               />
             </div>
 
-            <button 
-              type="button"
+            <button
+              type="submit"
               className="login-button"
-              onClick={handleLogin} 
               disabled={loading}
             >
-              {loading ? (
-                <>
-                  <span>Entrando...</span>
-                </>
-              ) : (
-                "Entrar"
-              )}
+              {loading ? "Entrando..." : "Entrar"}
             </button>
+
           </form>
 
           <div className="form-footer">
             <span>© Projecta Empreendimentos</span>
           </div>
+
         </div>
       </div>
     </div>

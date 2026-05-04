@@ -1,24 +1,34 @@
+:root {
+    --primary: #f59e0b;
+    --primary-dark: #d97706;
+    --bg: #f9fafb;
+    --white: #fff;
+    --border: #e5e7eb;
+    --text: #374151;
+    --text-light: #6b7280;
+}
+
 /* =========================
    CONTAINER
 ========================= */
 .edit-container {
-    max-width: 900px;
-    margin: 120px auto;
+    max-width: 1000px;
+    margin: 80px auto;
     padding: 20px;
 }
 
 /* =========================
-   FORM
+   FORM CARD
 ========================= */
 .edit-form {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 
-    background: #fff;
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    background: var(--white);
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 /* =========================
@@ -27,23 +37,31 @@
 .gallery-container {
     display: grid;
     grid-template-columns: 2fr 1fr;
-    gap: 15px;
+    gap: 16px;
 }
 
 .main-photo {
     width: 100%;
-    height: 400px;
-    border-radius: 16px;
+    height: 420px;
+    border-radius: 20px;
     overflow: hidden;
+    position: relative;
 }
 
 .main-photo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: 0.3s;
 }
 
-/* thumbs estilo Airbnb */
+.main-photo:hover img {
+    transform: scale(1.03);
+}
+
+/* =========================
+   THUMBS (Airbnb style)
+========================= */
 .thumbs-airbnb {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -52,63 +70,63 @@
 
 .thumbs-airbnb img {
     width: 100%;
-    height: 95px;
+    height: 100px;
     object-fit: cover;
     border-radius: 12px;
     cursor: pointer;
     opacity: 0.7;
-    transition: 0.2s;
+    transition: all 0.2s ease;
 }
 
 .thumbs-airbnb img:hover {
-    transform: scale(1.03);
+    transform: scale(1.05);
     opacity: 1;
 }
 
 .active-thumb {
-    border: 2px solid #f59e0b;
+    border: 2px solid var(--primary);
     opacity: 1 !important;
 }
 
 /* =========================
-   IMAGENS EDITOR GRID
+   GRID IMAGENS
 ========================= */
 .images-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 12px;
-    margin-top: 10px;
+    margin-top: 12px;
 }
 
 .image-card {
     position: relative;
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid #eee;
-    background: #fff;
-    transition: 0.2s;
+    border: 1px solid var(--border);
+    background: var(--white);
+    transition: all 0.2s ease;
 }
 
 .image-card:hover {
-    transform: scale(1.02);
-    border-color: #f59e0b;
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 .mini-img {
     width: 100%;
     height: 110px;
     object-fit: cover;
-    display: block;
 }
 
-/* botão X */
+/* botão remover */
 .remove-btn {
     position: absolute;
     top: 6px;
     right: 6px;
 
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
 
     border: none;
     border-radius: 50%;
@@ -122,17 +140,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    transition: 0.2s;
 }
 
 .remove-btn:hover {
     background: #ef4444;
+    transform: scale(1.1);
 }
 
 /* =========================
-   ADD BTN
+   BOTÃO ADD
 ========================= */
 .add-btn {
-    background: #3b82f6;
+    background: var(--primary);
     color: white;
 
     border: none;
@@ -141,6 +162,11 @@
 
     cursor: pointer;
     margin-top: 10px;
+    transition: 0.2s;
+}
+
+.add-btn:hover {
+    background: var(--primary-dark);
 }
 
 /* =========================
@@ -149,7 +175,7 @@
 .grid-2 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 12px;
 }
 
 /* =========================
@@ -158,19 +184,55 @@
 .edit-form input,
 .edit-form textarea,
 .edit-form select {
-    padding: 10px;
+    padding: 12px;
     border-radius: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     outline: none;
+    font-size: 14px;
+    transition: 0.2s;
 }
 
-/* botão salvar */
+/* foco bonito */
+.edit-form input:focus,
+.edit-form textarea:focus,
+.edit-form select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+/* =========================
+   BOTÃO SALVAR
+========================= */
 .edit-form button[type="submit"] {
-    padding: 12px;
+    margin-top: 10px;
+    padding: 14px;
     border: none;
     border-radius: 12px;
-    background: #f59e0b;
+    background: var(--primary);
     color: #fff;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 15px;
     cursor: pointer;
+    transition: 0.2s;
+}
+
+.edit-form button[type="submit"]:hover {
+    background: var(--primary-dark);
+}
+
+/* =========================
+   RESPONSIVO
+========================= */
+@media (max-width: 768px) {
+    .gallery-container {
+        grid-template-columns: 1fr;
+    }
+
+    .main-photo {
+        height: 260px;
+    }
+
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
 }

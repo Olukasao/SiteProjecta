@@ -1,19 +1,26 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import Sidebar from "./SidebarAdmin";
 import HeaderAdmin from "./HeaderAdmin";
-import "../styles/AdminLayout.css"
+import "../styles/AdminLayout.css";
 
 export default function AdminLayout() {
+  const token = localStorage.getItem("token");
+
+  // 🔐 proteção de rota
+  if (!token) {
+    return <Navigate to="/admin/login" replace />;
+  }
+
   return (
     <div className="admin-container">
       <Sidebar />
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <div className="admin-main">
         <HeaderAdmin />
 
-        <div className="admin-content">
+        <main className="admin-content">
           <Outlet />
-        </div>
+        </main>
       </div>
     </div>
   );

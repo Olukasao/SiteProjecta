@@ -10,6 +10,8 @@ import CadProperty from "../admin/CadProperty";
 import PreviewProperty from "../admin/PreviewProperty";
 import ListUsers from "../admin/ListUsers";
 import EditImovel from "../admin/EditImove";
+import CadUser from "../admin/CadUser";
+import EditUser from "../admin/EditUser";
 
 export default function AdminRoutes() {
     return (
@@ -32,7 +34,10 @@ export default function AdminRoutes() {
                 <Route path="imoveis" element={<ListProperty />} />
                 <Route path="imoveis/cadastrar" element={<CadProperty />} />
                 <Route path="usuarios" element={<ListUsers />} />
+                <Route path="usuarios/cadastrar" element={<CadUser />} />
+                <Route path="usuarios/editar/:id" element={<EditUser />} />
                 <Route path="imoveis/editar/:id" element={<EditImovel />} />
+
                 <Route path="preview-imovel" element={<PreviewProperty />} />
             </Route>
         </>
