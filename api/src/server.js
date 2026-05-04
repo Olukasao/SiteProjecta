@@ -16,4 +16,8 @@ app.use("/api",routes);
 
 app.listen(porta, () => {
   console.log("Servidor rodando na porta " + porta );
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> refs/remotes/origin/main
