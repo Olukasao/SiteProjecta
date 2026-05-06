@@ -1,0 +1,149 @@
+/* =========================
+   BASE
+========================= */
+.fin-page {
+  background: #f8fafc;
+  margin-top: 120px;
+}
+
+.fin-container {
+  max-width: 1200px;
+  margin: auto;
+
+  padding: 60px 20px;
+}
+
+/* =========================
+   HERO
+========================= */
+.fin-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 60px;
+  align-items: center;
+  margin-bottom: 100px;
+}
+
+.fin-hero-text h1 {
+  font-size: 42px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.fin-hero-text p {
+  margin: 20px 0;
+  color: #666;
+}
+
+.fin-hero-text ul {
+  list-style: none;
+  padding: 0;
+}
+
+.fin-hero-text li {
+  margin-bottom: 10px;
+}
+
+.fin-hero-img img {
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+}
+
+/* =========================
+   BANCOS
+========================= */
+.fin-bancos h2 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 50px;
+}
+
+.fin-bancos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+}
+
+.fin-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  text-decoration: none;
+  color: #222;
+  transition: all 0.3s ease;
+  border: 1px solid #eee;
+}
+
+.fin-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+.fin-logo {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.fin-logo img {
+  max-height: 90px;
+  max-width: 120px;
+  object-fit: contain;
+}
+
+.fin-card h3 {
+  margin-bottom: 10px;
+}
+
+.fin-card span {
+  font-size: 14px;
+  color: #007aff;
+  font-weight: 500;
+}
+
+/* =========================
+   FAQ
+========================= */
+.fin-faq {
+  margin-top: 100px;
+}
+
+.fin-faq h2 {
+  margin-bottom: 20px;
+}
+
+.fin-faq details {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #eee;
+}
+
+.fin-faq summary {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.fin-faq p {
+  margin-top: 10px;
+  color: #555;
+}
+
+/* =========================
+   RESPONSIVO
+========================= */
+@media (max-width: 768px) {
+  .fin-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .fin-hero-text h1 {
+    font-size: 30px;
+  }
+}

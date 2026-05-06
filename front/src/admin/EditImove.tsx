@@ -37,6 +37,22 @@ export default function EditImovel() {
         imagens: [],
     });
 
+    function handleFileChange(e: any) {
+        const selected = Array.from(e.target.files);
+
+        const preview = selected.map((file: any) => ({
+            file,
+            url: URL.createObjectURL(file),
+        }));
+
+        setFiles((prev) => [...prev, ...preview]);
+    }
+
+    function removeNewImage(index: number) {
+        setFiles((prev) => prev.filter((_: any, i: number) => i !== index));
+    }
+
+
     const [selectedImg, setSelectedImg] = useState<string>("");
 
     // =========================
@@ -125,32 +141,44 @@ export default function EditImovel() {
         setSaving(true);
 
         try {
-            await api.put(`/imoveis/${id}`, {
-                nome: form.titulo,
-                preco: form.preco,
-                descricao: form.descricao,
-                tipo: form.tipo,
+            const formData = new FormData();
 
-                precoCondominio: form.precoCondominio,
-                precoIptu: form.precoIptu,
-                diferenciais: JSON.stringify(form.diferenciais),
+            formData.append("nome", form.titulo);
+            formData.append("preco", form.preco);
+            formData.append("descricao", form.descricao);
+            formData.append("tipo", form.tipo);
 
-                endereco: {
-                    cidade: form.cidade,
-                    bairro: form.bairro,
-                    cep: form.cep,
-                    rua: form.endereco,
+            formData.append("precoCondominio", form.precoCondominio);
+            formData.append("precoIptu", form.precoIptu);
+            formData.append("diferenciais", JSON.stringify(form.diferenciais));
+
+            formData.append("endereco", JSON.stringify({
+                cidade: form.cidade,
+                bairro: form.bairro,
+                cep: form.cep,
+                rua: form.endereco,
+            }));
+
+            formData.append("detalhes", JSON.stringify({
+                quartos: form.quartos,
+                suites: form.suites,
+                banheiros: form.banheiros,
+                vagas: form.vagas,
+                area: form.area,
+            }));
+
+            // 🔥 imagens antigas (mantidas)
+            formData.append("imagensAntigas", JSON.stringify(form.imagens));
+
+            // 🔥 novas imagens
+            files.forEach((file: any) => {
+                formData.append("imagens", file.file);
+            });
+
+            await api.put(`/imoveis/${id}`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
                 },
-
-                detalhes: {
-                    quartos: form.quartos,
-                    suites: form.suites,
-                    banheiros: form.banheiros,
-                    vagas: form.vagas,
-                    area: form.area,
-                },
-
-                imagens: form.imagens,
             });
 
             alert("Imóvel atualizado com sucesso!");
@@ -163,7 +191,6 @@ export default function EditImovel() {
             setSaving(false);
         }
     }
-
     if (loading) return <p>Carregando...</p>;
 
     return (
@@ -204,7 +231,31 @@ export default function EditImovel() {
                         ))}
                     </div>
                 </div>
+                <h3>Adicionar novas imagens</h3>
 
+                <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileChange}
+                />
+                {files.length > 0 && (
+                    <div className="images-grid">
+                        {files.map((img: any, index: number) => (
+                            <div key={index} className="image-card">
+                                <img src={img.url} className="mini-img" />
+
+                                <button
+                                    type="button"
+                                    onClick={() => removeNewImage(index)}
+                                    className="remove-btn"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
                 {/* =========================
                     CAMPOS
                 ========================= */}

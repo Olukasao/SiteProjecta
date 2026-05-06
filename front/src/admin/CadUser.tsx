@@ -85,7 +85,7 @@ export default function CadUser() {
             // 🔥 não enviar confirmSenha pro backend
             const { confirmSenha, ...data } = form;
 
-            await api.post("/usuarios", data);
+            await api.post("/usuarios/add", data);
 
             setSuccess("Usuário cadastrado com sucesso!");
 

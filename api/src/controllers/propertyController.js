@@ -314,7 +314,7 @@ const atualizarImovel = (req, res) => {
       imagens = req.body.imagens;
     }
   }
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = process.env.BASE_URL ||"http://localhost:3500" ;
 
 
 

@@ -1,4 +1,6 @@
 const db = require("../database/db");
+const bcrypt = require("bcrypt");
+
 
 const getUsers = (req, res) => {
     const query = "SELECT * FROM admins";
@@ -88,8 +90,74 @@ const updateUser = async (req, res) => {
     }
 };
 
+const createUser = async (req, res) => {
+    try {
+        const {
+            nome,
+            email,
+            username,
+            senha,
+            role,
+            phone
+        } = req.body;
+
+        // 🔥 validação básica
+        if (!nome || !email || !username || !senha) {
+            return res.status(400).json({
+                message: "Nome, email, username e senha são obrigatórios"
+            });
+        }
+
+        // 🔥 verifica duplicidade
+        const [existing] = await db.promise().query(
+            "SELECT id FROM admins WHERE email = ? OR username = ?",
+            [email, username]
+        );
+
+        if (existing.length > 0) {
+            return res.status(400).json({
+                message: "Email ou username já cadastrado"
+            });
+        }
+
+        // 🔐 hash da senha
+        const hashedPassword = await bcrypt.hash(senha, 10);
+
+        const query = `
+            INSERT INTO admins 
+            (nome, email, username, senha, role, phone, status, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        `;
+
+        const values = [
+            nome,
+            email,
+            username,
+            hashedPassword,
+            role || "editor",
+            phone || null,
+            "active"
+        ];
+
+        const [result] = await db.promise().query(query, values);
+
+        return res.status(201).json({
+            message: "Usuário criado com sucesso",
+            userId: result.insertId
+        });
+
+    } catch (error) {
+        console.error("CREATE USER ERROR:", error);
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+};
+
+
+
 module.exports = {
     getUserById,
     getUsers,
-    updateUser
+    updateUser, createUser
 };

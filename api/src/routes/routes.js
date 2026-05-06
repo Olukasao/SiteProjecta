@@ -8,7 +8,7 @@ const {
     atualizarImovel
 } = require("../controllers/propertyController");
 
-const { getUsers, getUserById, updateUser } = require("../controllers/usersController");
+const { getUsers, getUserById, updateUser, createUser } = require("../controllers/usersController");
 
 const { authMiddleware } = require("../middlewares/authMiddleware");
 
@@ -26,7 +26,7 @@ router.get("/imoveis", getImoveis);
 router.get("/imovel/:id", getImovelById);
 
 router.post("/imoveis", authMiddleware, upload.array("imagens"), criarImovel);
-router.put("/imoveis/:id", authMiddleware, atualizarImovel);
+router.put("/imoveis/:id", authMiddleware, upload.array("imagens"), atualizarImovel);
 
 router.delete("/imoveis/:id", authMiddleware, deletarImovel);
 
@@ -34,7 +34,9 @@ router.delete("/imoveis/:id", authMiddleware, deletarImovel);
 // endpoints usuarios
 router.get("/usuarios/", authMiddleware, getUsers)
 router.get("/usuario/:id", authMiddleware, getUserById)
+router.post("/usuarios/add", authMiddleware, createUser);
 router.put("/usuario/update/:id", authMiddleware, updateUser)
+
 
 
 module.exports = router;

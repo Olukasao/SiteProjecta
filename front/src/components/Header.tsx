@@ -45,7 +45,7 @@ export default function Header() {
           </nav>
 
           {/* BOTÃO DESKTOP */}
-          <button className="btn-primary-header">
+          <button className="btn-primary-header" onClick={()=>window.open("https://wa.me/5511993878619","_blank")}>
             Fale Conosco
           </button>
 
@@ -80,7 +80,7 @@ export default function Header() {
         <Link to="/imoveis" onClick={() => setOpen(false)} >Imóveis</Link>
         <Link to="/financiamento" onClick={() => setOpen(false)} >Financiamento</Link>
         <Link to="/area-cliente/login" onClick={() => setOpen(false)} className="area" >Área do Cliente</Link>
-      
+
 
         <button className="btn-primary">
           Fale Conosco

@@ -51,12 +51,7 @@ export default function Footer() {
             <Link to="/area-cliente/login">Área do Cliente</Link>
           </div>
 
-          <div className="footer-col">
-            <h4>Suporte</h4>
-            <a href="#">Central de ajuda</a>
-            <a href="#">Termos</a>
-            <a href="#">Privacidade</a>
-          </div>
+        
 
           {/* CONTATO */}
           <div className="footer-col">
