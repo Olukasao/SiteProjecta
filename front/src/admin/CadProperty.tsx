@@ -10,6 +10,8 @@ import {
     Eye,
     Save,
     Upload,
+    Car,
+    ChefHat,
 } from "lucide-react";
 import "./styles/CadProperty.css";
 import { api } from "../services/api";
@@ -19,40 +21,29 @@ export default function CadProperty() {
     const [arquivos, setArquivos] = useState<File[]>([]);
     const [imagens, setImagens] = useState<string[]>([]);
 
-
-
     const [form, setForm] = useState({
         nome: "",
         tipo: "casa",
         status: "venda",
         preco: "",
-        precoCondominio: "", // ✅ NOVO
-        precoIptu: "",       // ✅ NOVO
-
+        precoCondominio: "",
+        precoIptu: "",
         endereco: {
-            cep: "", rua: "", numero: "", complemento: "", bairro: "", cidade: "", estado: ""
+            cep: "", rua: "", numero: "", complemento: "",
+            bairro: "", cidade: "", estado: ""
         },
-
         detalhes: {
-            quartos: "",
-            suites: "",
-            banheiros: "",
-            vagas: "",
-            area: "",
-            cozinha: ""
+            quartos: "", suites: "", banheiros: "",
+            vagas: "", area: "", cozinha: ""
         },
-
         diferenciais: [] as string[],
-
         descricao: ""
     });
 
     const toggleDiferencial = (item: string) => {
         setForm((prev) => {
             const atuais = prev.diferenciais ?? [];
-
             const exists = atuais.includes(item);
-
             return {
                 ...prev,
                 diferenciais: exists
@@ -63,113 +54,86 @@ export default function CadProperty() {
     };
 
     const listaDiferenciais = [
-        "Piscina",
-        "Churrasqueira",
-        "Academia",
-        "Portaria 24h",
-        "Elevador",
-        "Mobiliado",
-        "Pet friendly",
-        "Salão de festas"
+        "Piscina", "Churrasqueira", "Academia", "Portaria 24h",
+        "Elevador", "Mobiliado", "Pet friendly", "Salão de festas"
     ];
+
     // ========================= HANDLES =========================
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => {
         const { name, value } = e.target;
         setForm({ ...form, [name]: value });
     };
 
     const handleEndereco = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-
         setForm((prev) => ({
             ...prev,
             endereco: { ...prev.endereco, [name]: value }
         }));
-
         if (name === "cep" && value.replace(/\D/g, "").length === 8) {
             buscarCEP(value);
         }
     };
+
     const handleDetalhes = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setForm({
-            ...form,
-            detalhes: { ...form.detalhes, [name]: value }
-        });
+        setForm({ ...form, detalhes: { ...form.detalhes, [name]: value } });
     };
 
-    const formatarPreco = (valor: string) => {
-        return valor
+    const formatarPreco = (valor: string) =>
+        valor
             .replace(/\D/g, "")
             .replace(/(\d)(\d{2})$/, "$1,$2")
             .replace(/(?=(\d{3})+(\D))\B/g, ".");
-    };
 
     const formatarPrecoParaBanco = (valor: string) => {
         if (!valor) return 0;
-
-        return Number(
-            valor
-                .replace(/\./g, "") // remove pontos (milhar)
-                .replace(",", ".")  // vírgula vira ponto
-        );
+        return Number(valor.replace(/\./g, "").replace(",", "."));
     };
+
     const handlePreco = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const valor = formatarPreco(e.target.value);
-        setForm({ ...form, preco: valor });
+        setForm({ ...form, preco: formatarPreco(e.target.value) });
     };
 
     const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
-
         setArquivos(prev => [...prev, ...files]);
-
-        // preview
         const preview = files.map(file => URL.createObjectURL(file));
         setImagens(prev => [...prev, ...preview]);
     };
-
 
     const removerImagem = (index: number) => {
         setImagens((prev) => prev.filter((_, i) => i !== index));
         setArquivos((prev) => prev.filter((_, i) => i !== index));
     };
+
     const handlePreview = () => {
         navigate("/preview-imovel", { state: { ...form, imagens } });
     };
 
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         const formData = new FormData();
-
         formData.append("nome", form.nome);
         formData.append("preco", formatarPrecoParaBanco(form.preco).toString());
         formData.append("descricao", form.descricao);
         formData.append("tipo", form.tipo);
         formData.append("status", form.status);
-
         formData.append("endereco", JSON.stringify(form.endereco));
         formData.append("detalhes", JSON.stringify(form.detalhes));
         formData.append("precoCondominio", formatarPrecoParaBanco(form.precoCondominio).toString());
         formData.append("precoIptu", formatarPrecoParaBanco(form.precoIptu).toString());
-
         formData.append("diferenciais", JSON.stringify(form.diferenciais));
-        arquivos.forEach((file) => {
-            formData.append("imagens", file);
-        });
+        arquivos.forEach((file) => formData.append("imagens", file));
 
         try {
             const res = await api.post("/imoveis", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
+                headers: { "Content-Type": "multipart/form-data" }
             });
-
             console.log(res.data);
             alert("✅ Imóvel cadastrado com sucesso!");
-
         } catch (err) {
             console.error(err);
             alert("Erro ao cadastrar imóvel");
@@ -178,18 +142,11 @@ export default function CadProperty() {
 
     const buscarCEP = async (cep: string) => {
         const cepLimpo = cep.replace(/\D/g, "");
-
         if (cepLimpo.length !== 8) return;
-
         try {
             const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
             const data = await res.json();
-
-            if (data.erro) {
-                alert("CEP não encontrado");
-                return;
-            }
-
+            if (data.erro) { alert("CEP não encontrado"); return; }
             setForm((prev) => ({
                 ...prev,
                 endereco: {
@@ -200,42 +157,38 @@ export default function CadProperty() {
                     estado: data.uf || ""
                 }
             }));
-
         } catch (err) {
             console.error("Erro ao buscar CEP:", err);
         }
     };
 
-    const formatarCEP = (valor: string) => {
-        return valor
-            .replace(/\D/g, "")
-            .replace(/(\d{5})(\d)/, "$1-$2")
-            .slice(0, 9);
-    };
+    const formatarCEP = (valor: string) =>
+        valor.replace(/\D/g, "").replace(/(\d{5})(\d)/, "$1-$2").slice(0, 9);
+
     useEffect(() => {
-        return () => {
-            imagens.forEach((img) => URL.revokeObjectURL(img));
-        };
+        return () => { imagens.forEach((img) => URL.revokeObjectURL(img)); };
     }, [imagens]);
 
-    const primeiraImagem = imagens[0] || "https://via.placeholder.com/800x400/6366f1/ffffff?text=Adicione+imagens";
+    const primeiraImagem =
+        imagens[0] || "https://via.placeholder.com/1200x500/4f46e5/ffffff?text=Adicione+imagens";
 
     return (
         <form className="cadastro-container-vertical" onSubmit={handleSubmit}>
-            {/* ================= PREVIEW TOPO ================= */}
+
+            {/* ====== PREVIEW CARD ====== */}
             <div className="box preview-top">
                 <div className="preview-main-img">
-                    <img src={primeiraImagem} alt={form.nome || "Preview"} />
+                    <img src={primeiraImagem} alt={form.nome || "Preview do imóvel"} />
                 </div>
 
                 <div className="preview-content">
                     <div className="preview-tags">
                         <span>
-                            <Home className="w-3 h-3 mr-1 inline" />
+                            <Home size={11} />
                             {form.tipo}
                         </span>
                         <span>
-                            <Building2 className="w-3 h-3 mr-1 inline" />
+                            <Building2 size={11} />
                             {form.status}
                         </span>
                     </div>
@@ -243,157 +196,150 @@ export default function CadProperty() {
                     <h3>{form.nome || "Nome do imóvel"}</h3>
 
                     <p className="preview-location">
-                        <MapPin className="w-4 h-4 mr-2 inline" />
-                        {form.endereco.bairro || "-"} - {form.endereco.cidade || "-"}
+                        <MapPin size={14} />
+                        {form.endereco.bairro || "Bairro"} — {form.endereco.cidade || "Cidade"}
                     </p>
 
                     <span className="preview-preco">
                         R$ {form.preco || "0,00"}
                     </span>
+
                     {form.precoCondominio && (
-                        <p className="preview-extra">
-                            Cond: R$ {form.precoCondominio}/mês
-                        </p>
+                        <p className="preview-extra">Condomínio: R$ {form.precoCondominio}/mês</p>
                     )}
-
                     {form.precoIptu && (
-                        <p className="preview-extra">
-                            IPTU: R$ {form.precoIptu}/ano
-                        </p>
+                        <p className="preview-extra">IPTU: R$ {form.precoIptu}/ano</p>
                     )}
+
                     <div className="preview-detalhes">
-                        <div>
-                            <Bed className="w-4 h-4 mr-2 inline" />
-                            {form.detalhes.quartos || 0}
-                        </div>
-
-                        {/* ✅ SUÍTES */}
-                        <div>
-                            <Bath className="w-4 h-4 mr-2 inline" />
-                            {form.detalhes.suites || 0} suítes
-                        </div>
-
-                        <div>
-                            <Bath className="w-4 h-4 mr-2 inline" />
-                            {form.detalhes.banheiros || 0}
-                        </div>
+                        <div><Bed size={13} /> {form.detalhes.quartos || 0} quartos</div>
+                        <div><Bath size={13} /> {form.detalhes.suites || 0} suítes</div>
+                        <div><Bath size={13} /> {form.detalhes.banheiros || 0} banheiros</div>
+                        {form.detalhes.vagas && (
+                            <div><Car size={13} /> {form.detalhes.vagas} vagas</div>
+                        )}
+                        {form.detalhes.area && (
+                            <div><Ruler size={13} /> {form.detalhes.area} m²</div>
+                        )}
                     </div>
-                    <p className="preview-desc">
-                        {form.descricao || "Descrição do imóvel..."}
-                    </p>
+
+                    {form.descricao && (
+                        <p className="preview-desc">{form.descricao}</p>
+                    )}
                 </div>
             </div>
 
-
-
-
-            {/* ================= FORM ================= */}
+            {/* ====== FORM ====== */}
             <div className="box">
                 <h2>
-                    <Home className="w-7 h-7 mr-3 inline text-indigo-500" />
+                    <Home size={22} style={{ color: "var(--accent)" }} />
                     Cadastrar Imóvel
                 </h2>
 
-                <div className="input-group">
-                    <label htmlFor="tipo">Tipo do imóvel</label>
-                    <select id="tipo" name="tipo" onChange={handleChange} value={form.tipo}>
-                        <option value="casa">Casa</option>
-                        <option value="apartamento">Apartamento</option>
-                        <option value="terreno">Terreno</option>
-                    </select>
+                {/* Tipo & Finalidade */}
+                <div className="form-type-row">
+                    <div className="input-group">
+                        <label htmlFor="tipo">Tipo do imóvel</label>
+                        <select id="tipo" name="tipo" onChange={handleChange} value={form.tipo}>
+                            <option value="casa">Casa</option>
+                            <option value="apartamento">Apartamento</option>
+                            <option value="terreno">Terreno</option>
+                        </select>
+                    </div>
+                    <div className="input-group">
+                        <label htmlFor="status">Finalidade</label>
+                        <select id="status" name="status" onChange={handleChange} value={form.status}>
+                            <option value="venda">Venda</option>
+                            <option value="aluguel">Aluguel</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div className="input-group">
-                    <label htmlFor="status">Finalidade</label>
-                    <select id="status" name="status" onChange={handleChange} value={form.status}>
-                        <option value="venda">Venda</option>
-                        <option value="aluguel">Aluguel</option>
-                    </select>
-                </div>
-
+                {/* Nome */}
                 <div className="input-group">
                     <label htmlFor="nome">Nome do imóvel</label>
                     <input
                         id="nome"
                         name="nome"
-                        placeholder="Ex: Casa moderna no centro"
+                        placeholder="Ex: Casa moderna com piscina no centro"
                         onChange={handleChange}
                         value={form.nome}
                     />
                 </div>
 
-                <div className="input-group">
-                    <input
-                        name="preco"
-                        placeholder="R$ 0,00"
-                        value={form.preco}
-                        onChange={handlePreco}
-                    />
-                </div>
-                <div className="grid-2">
-
+                {/* Preços */}
+                <h3><span>💰</span> Valores</h3>
+                <div className="grid-3">
                     <div className="input-group">
+                        <label>Preço principal</label>
+                        <input
+                            name="preco"
+                            placeholder="R$ 0,00"
+                            value={form.preco}
+                            onChange={handlePreco}
+                        />
+                    </div>
+                    <div className="input-group">
+                        <label>Condomínio</label>
                         <input
                             name="precoCondominio"
-                            placeholder="Condomínio (R$)"
+                            placeholder="R$ 0,00 / mês"
                             value={form.precoCondominio}
                             onChange={(e) =>
                                 setForm({ ...form, precoCondominio: formatarPreco(e.target.value) })
                             }
                         />
                     </div>
-
                     <div className="input-group">
+                        <label>IPTU</label>
                         <input
                             name="precoIptu"
-                            placeholder="IPTU (R$)"
+                            placeholder="R$ 0,00 / ano"
                             value={form.precoIptu}
                             onChange={(e) =>
                                 setForm({ ...form, precoIptu: formatarPreco(e.target.value) })
                             }
                         />
                     </div>
-
                 </div>
 
+                {/* Endereço */}
                 <h3>
-                    <MapPin className="w-5 h-5 mr-2 inline" />
+                    <MapPin size={14} />
                     Endereço
                 </h3>
 
                 <div className="form-section">
                     <div className="grid-3">
                         <div className="input-group">
+                            <label>CEP</label>
                             <input
                                 name="cep"
-                                placeholder="CEP"
+                                placeholder="00000-000"
                                 value={form.endereco.cep}
                                 onChange={(e) => {
                                     const valor = formatarCEP(e.target.value);
-
                                     handleEndereco({
                                         ...e,
-                                        target: {
-                                            ...e.target,
-                                            name: "cep",
-                                            value: valor
-                                        }
+                                        target: { ...e.target, name: "cep", value: valor }
                                     } as React.ChangeEvent<HTMLInputElement>);
                                 }}
                             />
                         </div>
                         <div className="input-group">
+                            <label>Rua / Logradouro</label>
                             <input
                                 name="rua"
-                                placeholder="Rua"
+                                placeholder="Rua das Flores"
                                 onChange={handleEndereco}
                                 value={form.endereco.rua}
                             />
                         </div>
                         <div className="input-group">
+                            <label>Número</label>
                             <input
                                 name="numero"
-                                placeholder="Número"
+                                placeholder="123"
                                 onChange={handleEndereco}
                                 value={form.endereco.numero}
                             />
@@ -402,33 +348,37 @@ export default function CadProperty() {
 
                     <div className="grid-3">
                         <div className="input-group">
+                            <label>Complemento</label>
                             <input
                                 name="complemento"
-                                placeholder="Complemento"
+                                placeholder="Apto, Bloco..."
                                 onChange={handleEndereco}
                                 value={form.endereco.complemento}
                             />
                         </div>
                         <div className="input-group">
+                            <label>Bairro</label>
                             <input
                                 name="bairro"
-                                placeholder="Bairro"
+                                placeholder="Centro"
                                 onChange={handleEndereco}
                                 value={form.endereco.bairro}
                             />
                         </div>
                         <div className="input-group">
+                            <label>Cidade</label>
                             <input
                                 name="cidade"
-                                placeholder="Cidade"
+                                placeholder="São Paulo"
                                 onChange={handleEndereco}
                                 value={form.endereco.cidade}
                             />
                         </div>
                         <div className="input-group">
+                            <label>Estado</label>
                             <input
                                 name="estado"
-                                placeholder="Estado"
+                                placeholder="SP"
                                 onChange={handleEndereco}
                                 value={form.endereco.estado}
                             />
@@ -436,67 +386,73 @@ export default function CadProperty() {
                     </div>
                 </div>
 
+                {/* Detalhes */}
                 <h3>
-                    <Ruler className="w-5 h-5 mr-2 inline" />
-                    Detalhes
+                    <Ruler size={14} />
+                    Detalhes do imóvel
                 </h3>
 
                 <div className="grid-4">
                     <div className="input-group">
+                        <label>Dormitórios</label>
                         <input
                             name="quartos"
-                            placeholder="Dormitorios"
+                            placeholder="0"
                             onChange={handleDetalhes}
                             value={form.detalhes.quartos}
                         />
                     </div>
                     <div className="input-group">
-
-                        <input
-                            name="banheiros"
-                            placeholder="Banheiro"
-                            onChange={handleDetalhes}
-                            value={form.detalhes.banheiros}
-                        />
-                    </div>
-
-                    <div className="input-group">
+                        <label>Suítes</label>
                         <input
                             type="number"
                             name="suites"
-                            placeholder="Suítes"
+                            placeholder="0"
                             min="0"
                             onChange={handleDetalhes}
                             value={form.detalhes.suites}
                         />
                     </div>
                     <div className="input-group">
+                        <label>Banheiros</label>
                         <input
-                            name="cozinha"
-                            placeholder="Cozinha"
+                            name="banheiros"
+                            placeholder="0"
                             onChange={handleDetalhes}
-                            value={form.detalhes.cozinha}
+                            value={form.detalhes.banheiros}
                         />
                     </div>
                     <div className="input-group">
+                        <label>Vagas de garagem</label>
                         <input
                             name="vagas"
-                            placeholder="Vagas de Garagem"
+                            placeholder="0"
                             onChange={handleDetalhes}
                             value={form.detalhes.vagas}
                         />
                     </div>
                     <div className="input-group">
+                        <label>Área total (m²)</label>
                         <input
                             name="area"
-                            placeholder="Metragem"
+                            placeholder="Ex: 120"
                             onChange={handleDetalhes}
                             value={form.detalhes.area}
                         />
                     </div>
+                    <div className="input-group">
+                        <label>Cozinha</label>
+                        <input
+                            name="cozinha"
+                            placeholder="Americana, Integrada..."
+                            onChange={handleDetalhes}
+                            value={form.detalhes.cozinha}
+                        />
+                    </div>
                 </div>
-                <h3>✨ Diferenciais</h3>
 
+                {/* Diferenciais */}
+                <h3><span>✨</span> Diferenciais</h3>
                 <div className="diferenciais-grid">
                     {listaDiferenciais.map((item) => (
                         <label key={item} className="checkbox-card">
@@ -510,52 +466,59 @@ export default function CadProperty() {
                     ))}
                 </div>
 
+                {/* Descrição */}
+                <h3><span>📝</span> Descrição</h3>
                 <div className="input-group">
                     <textarea
                         name="descricao"
-                        placeholder="Descreva o imóvel..."
+                        placeholder="Descreva os pontos fortes do imóvel, localização, acabamentos..."
                         onChange={handleChange}
                         value={form.descricao}
                     />
                 </div>
 
+                {/* Imagens */}
+                <h3><span>🖼️</span> Imagens</h3>
                 <div className="input-group">
-                    <label className="flex items-center cursor-pointer">
-                        <Upload className="w-5 h-5 mr-2 flex-shrink-0" />
-                        <span>Selecionar imagens</span>
+                    <label className="upload-label" htmlFor="file-upload">
+                        <Upload size={16} />
+                        <span>Clique para selecionar imagens</span>
                         <input
+                            id="file-upload"
                             type="file"
                             multiple
                             accept="image/*"
                             onChange={handleImage}
-                            className="hidden"
+                            style={{ display: "none" }}
                         />
                     </label>
-                    <div className="preview-imagens">
-                        {imagens.map((img, index) => (
-                            <div key={index} className="img-box">
-                                <img src={img} alt={`imagem-${index}`} />
 
-                                <button
-                                    type="button"
-                                    className="btn-remove-img"
-                                    onClick={() => removerImagem(index)}
-                                >
-                                    ✕
-                                </button>
-                            </div>
-                        ))}
-                    </div>
+                    {imagens.length > 0 && (
+                        <div className="preview-imagens">
+                            {imagens.map((img, index) => (
+                                <div key={index} className="img-box">
+                                    <img src={img} alt={`imagem-${index}`} />
+                                    <button
+                                        type="button"
+                                        className="btn-remove-img"
+                                        onClick={() => removerImagem(index)}
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
+                {/* Actions */}
                 <div className="actions">
                     <button type="button" className="btn-secondary" onClick={handlePreview}>
-                        <Eye className="w-4 h-4 mr-2" />
+                        <Eye size={15} />
                         Ver modo cliente
                     </button>
-
                     <button type="submit" className="btn-primary">
-                        <Save className="w-4 h-4 mr-2" />
+                        <Save size={15} />
                         Salvar imóvel
                     </button>
                 </div>

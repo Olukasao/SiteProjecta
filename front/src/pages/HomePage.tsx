@@ -19,7 +19,7 @@ interface Imovel {
   tipo?: string;
   quartos?: number;
   banheiros?: number;
-  suite?: number;
+  suite?:number;
   vagas?: number;
   imagens?: string[];
 }
@@ -40,14 +40,14 @@ const PropertyCard = memo(function PropertyCard({ imovel }: { imovel: Imovel }) 
   const imagem = imovel.imagens?.[0] || sem_imagem;
 
   const formatarPreco = (valor?: number | string) => {
-    const numero = Number(valor) || 0;
+  const numero = Number(valor) || 0;
 
-    return numero.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-      minimumFractionDigits: 0,
-    });
-  };
+  return numero.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 0,
+  });
+};
 
   const handleClick = useCallback(() => {
     navigate(`/imovel/${imovel.id}`);
@@ -76,7 +76,7 @@ const PropertyCard = memo(function PropertyCard({ imovel }: { imovel: Imovel }) 
             <Bath size={16} />
             <span>{imovel.banheiros || 0} banheiros</span>
           </div>
-          <div className="detail-item">
+           <div className="detail-item">
             <Bath size={16} />
             <span>{imovel.suite || 0} Suite</span>
           </div>

@@ -1,288 +1,499 @@
-/* =========================
-   HERO
-========================= */
+/* ================= IMPORTS ================= */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
+/* ================= TOKENS ================= */
+:root {
+  --bg:            #f2f4f8;
+  --surface:       #ffffff;
+  --surface-2:     #f8f9fb;
+  --border:        #e8eaed;
+
+  --text-primary:   #0f172a;
+  --text-secondary: #64748b;
+  --text-muted:     #94a3b8;
+
+  --accent:        #f59e0b;
+  --accent-light:  #eef2ff;
+  --accent-glow:   rgba(79,70,229,0.15);
+
+  --green:         #059669;
+
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   20px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-md: 0 4px 16px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.04);
+  --shadow-lg: 0 12px 36px rgba(15,23,42,0.10), 0 4px 12px rgba(15,23,42,0.05);
+
+  --transition: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ================= RESET ================= */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ================= HERO ================= */
 .page-hero {
-    padding: 120px 20px 40px;
-    text-align: center;
-    background: #f9fafb;
+  padding: 7rem 1.5rem 3rem;
+  text-align: center;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
 }
 
 .page-hero h1 {
-    font-size: 32px;
+  font-family: 'DM Serif Display', serif;
+  font-size: 36px;
+  margin-top: 20px;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
 }
 
-/* =========================
-   LAYOUT PRINCIPAL
-========================= */
+.page-hero p {
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+/* ================= LAYOUT ================= */
 .imoveis-layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 30px;
-
-    width: 100%;
-    max-width: 1400px;
-
-    margin-left: 0;
-    margin-right: auto;
-
-    padding: 40px 20px 40px 0;
+  display: grid;
+  grid-template-columns: 288px 1fr;
+  gap: 2rem;
+  max-width: 1360px;
+  margin: 2rem auto 5rem;
+  padding: 0 1.5rem;
+  align-items: start;
 }
 
-/* =========================
-   SIDEBAR (FILTROS)
-========================= */
+/* ================= SIDEBAR ================= */
 .filters-sidebar {
-    background: #fff;
-    padding: 20px;
-    border-radius: 16px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-
-    height: fit-content;
-    position: sticky;
-    top: 100px;
-
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  position: sticky;
+  top: 100px;
+  height: fit-content;
 }
 
-.filters-sidebar h3 {
-    margin-bottom: 10px;
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.25rem;
 }
 
+.sidebar-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+.btn-clear {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  transition: color var(--transition), background var(--transition);
+}
+
+.btn-clear:hover {
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+/* Sidebar inputs */
 .filters-sidebar input,
 .filters-sidebar select {
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
-    outline: none;
-    width: 100%;
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-primary);
+  background: var(--surface);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
 
-.filters-sidebar button {
-    margin-top: 10px;
-    background: #f59e0b;
-    border: none;
-    padding: 12px;
-    border-radius: 10px;
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
+.filters-sidebar input::placeholder { color: var(--text-muted); }
+
+.filters-sidebar input:focus,
+.filters-sidebar select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-.filters-sidebar button:hover {
-    opacity: 0.9;
+.filters-sidebar select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+  cursor: pointer;
 }
 
-/* =========================
-   DIFERENCIAIS (MODERNO)
-========================= */
+/* Filter group label */
 .filtro-grupo {
-    margin-top: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+  margin-top: 0.25rem;
 }
 
 .filtro-titulo {
-    font-weight: 600;
-    font-size: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
 }
 
-/* GRID */
+/* Price range row */
+.range-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* Diferenciais grid */
 .filtro-diferenciais {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-
-    max-height: 220px;
-    overflow-y: auto;
-    padding-right: 4px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  max-height: 230px;
+  overflow-y: auto;
+  padding-right: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
 
-/* SCROLL */
-.filtro-diferenciais::-webkit-scrollbar {
-    width: 6px;
-}
+.filtro-diferenciais::-webkit-scrollbar { width: 4px; }
+.filtro-diferenciais::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-.filtro-diferenciais::-webkit-scrollbar-thumb {
-    background: #e5e7eb;
-    border-radius: 10px;
-}
+/* Checkbox card */
+.check-card { cursor: pointer; }
+.check-card input { display: none; }
 
-/* CARD */
-.check-card {
-    cursor: pointer;
-}
-
-/* ESCONDE INPUT */
-.check-card input {
-    display: none;
-}
-
-/* CONTEÚDO */
 .check-content {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-
-    font-size: 13px;
-    color: #374151;
-
-    padding: 8px 10px;
-    border-radius: 10px;
-
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-
-    transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 7px 9px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  transition: border-color var(--transition), background var(--transition), color var(--transition);
+  user-select: none;
 }
 
-/* HOVER */
 .check-card:hover .check-content {
-    background: #f3f4f6;
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--accent);
 }
 
-/* ATIVO */
 .check-card input:checked + .check-content {
-    background: #f59e0b;
-    color: #fff;
-    border-color: #f59e0b;
-    transform: scale(1.03);
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
 }
 
-/* =========================
-   CONTEÚDO
-========================= */
+/* ================= CONTENT AREA ================= */
 .imoveis-content {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
 }
 
-.results-info {
-    margin: 20px 0;
-    color: #666;
+/* Results bar */
+.results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
-/* =========================
-   GRID IMÓVEIS
-========================= */
+.results-count {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+}
+
+.results-count strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* ================= PROPERTIES GRID ================= */
 .properties-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+  gap: 1.25rem;
 }
 
-/* CARD */
+/* ── Property Card ── */
 .property-card {
-    background: #fff;
-    border-radius: 16px;
-    overflow: hidden;
-    cursor: pointer;
-
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-    transition: 0.2s;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
 }
 
 .property-card:hover {
-    transform: translateY(-5px);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(79,70,229,0.2);
 }
 
-/* IMAGEM */
+/* Card Image */
 .card-image {
-    width: 100%;
-    height: 180px;
-    overflow: hidden;
+  width: 100%;
+  height: 192px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
 }
 
 .card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
 }
 
-/* INFO */
+.property-card:hover .card-image img {
+  transform: scale(1.05);
+}
+
+.card-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(15,23,42,0.4) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+/* Card badge */
+.card-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 1;
+}
+
+.card-badge.aluguel { background: var(--green); }
+
+/* Card Info */
 .property-info {
-    padding: 12px;
+  padding: 1.1rem 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: 1;
 }
 
-.property-info h3 {
-    font-size: 16px;
-    margin-bottom: 6px;
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.price {
-    color: #f59e0b;
-    font-weight: bold;
-    margin-bottom: 5px;
+.card-price {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--green);
+  letter-spacing: -0.3px;
 }
 
-.location {
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 8px;
+.card-location {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
 }
 
-/* FEATURES */
-.features {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    font-size: 12px;
-    color: #444;
-    margin-bottom: 8px;
+.card-location svg { color: var(--accent); flex-shrink: 0; }
+
+/* Card features */
+.card-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
-.features span {
-    background: #f3f4f6;
-    padding: 4px 8px;
-    border-radius: 8px;
+.card-features span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 4px 9px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
 }
 
-/* DESCRIÇÃO */
-.desc {
-    font-size: 12px;
-    color: #777;
+.card-features span svg { color: var(--accent); }
+
+/* Card description */
+.card-desc {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: auto;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--border);
 }
 
-/* =========================
-   RESPONSIVO
-========================= */
-
-/* TABLET */
-@media (max-width: 900px) {
-    .imoveis-layout {
-        grid-template-columns: 1fr;
-        padding: 20px;
-    }
-
-    .filters-sidebar {
-        position: relative;
-        top: 0;
-    }
-
-    .filtro-diferenciais {
-        grid-template-columns: 1fr 1fr 1fr;
-    }
+/* ── Empty state ── */
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 4rem 2rem;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1.5px dashed var(--border);
+  color: var(--text-muted);
+  font-size: 14px;
+  text-align: center;
 }
 
-/* MOBILE */
-@media (max-width: 600px) {
-    .filtro-diferenciais {
-        grid-template-columns: 1fr 1fr;
-    }
+.empty-state svg { opacity: 0.35; margin-bottom: 4px; }
 
-    .check-content {
-        font-size: 12px;
-        padding: 7px;
-    }
+/* ── Loading skeleton ── */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+  gap: 1.25rem;
 }
 
-/* MOBILE PEQUENO */
+.skeleton-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-img {
+  width: 100%;
+  height: 192px;
+  background: var(--surface-2);
+}
+
+.skeleton-body {
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-line {
+  height: 13px;
+  background: var(--surface-2);
+  border-radius: var(--radius-pill);
+}
+
+.skeleton-line.short { width: 55%; }
+.skeleton-line.med   { width: 75%; }
+.skeleton-line.full  { width: 100%; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 960px) {
+  .imoveis-layout {
+    grid-template-columns: 1fr;
+    margin: 1.25rem auto 4rem;
+  }
+
+  .filters-sidebar {
+    position: static;
+  }
+
+  .filtro-diferenciais {
+    grid-template-columns: repeat(3, 1fr);
+    max-height: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-hero { padding: 6rem 1rem 2.5rem; }
+  .page-hero h1 { font-size: 26px; }
+
+  .imoveis-layout { padding: 0 1rem; gap: 1rem; }
+
+  .filtro-diferenciais { grid-template-columns: repeat(2, 1fr); }
+
+  .results-bar { flex-direction: column; align-items: flex-start; gap: 6px; }
+}
+
 @media (max-width: 400px) {
-    .filtro-diferenciais {
-        grid-template-columns: 1fr;
-    }
+  .filtro-diferenciais { grid-template-columns: 1fr; }
 }
