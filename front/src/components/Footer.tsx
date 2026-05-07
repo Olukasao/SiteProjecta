@@ -51,7 +51,7 @@ export default function Footer() {
             <Link to="/area-cliente/login">Área do Cliente</Link>
           </div>
 
-        
+
 
           {/* CONTATO */}
           <div className="footer-col">
@@ -66,7 +66,7 @@ export default function Footer() {
             </p>
 
             <p className="contact-item">
-              <a></a><Mail size={16} /> contato@projecta.com
+              <Mail size={16} />contato@projectaempreendimentos.com.br
             </p>
           </div>
 

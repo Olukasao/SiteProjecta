@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "https://projectaempreendimentos.com.br/api"
+  baseURL: "http://192.168.1.133:3500/api"
 });
 
 // 🔐 interceptor (envia token automaticamente)

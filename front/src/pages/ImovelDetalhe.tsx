@@ -42,9 +42,19 @@ const defaultIcon = new L.Icon({
 async function getCoordsByCep(cep: string) {
   try {
     const cleanCep = cep.replace(/\D/g, "");
-    const res = await axios.get(
-      `https://nominatim.openstreetmap.org/search?postalcode=${cleanCep}&country=Brazil&format=json`
-    );
+   const res = await axios.get(
+  `https://nominatim.openstreetmap.org/search`,
+  {
+    params: {
+      postalcode: cleanCep,
+      country: "Brazil",
+      format: "json",
+    },
+    headers: {
+      "Accept-Language": "pt-BR",
+    },
+  }
+);
     if (res.data?.length > 0) {
       return { lat: parseFloat(res.data[0].lat), lng: parseFloat(res.data[0].lon) };
     }

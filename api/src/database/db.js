@@ -8,6 +8,17 @@ const mysql = require("mysql2");
 });*/
 
 const pool = mysql.createPool({
+  host: "localhost",
+  user: "projecta",
+  password: "project@123",
+  database: "projecta",
+
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
+
+/*const pool = mysql.createPool({
   host: "srv792.hstgr.io",
   user: "u654914095_projecta",
   password: "g32&vW1|6J/",
@@ -16,7 +27,7 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-});
+});*/
 
 pool.getConnection((err, conn) => {
   if (err) {
