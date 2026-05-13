@@ -60,15 +60,6 @@ function toggleFavorite(id: string): boolean {
   return idx === -1;
 }
 
-// ── Formatters ────────────────────────────────────────────────────────────────
-function formatBRL(value: number | string) {
-  return Number(value).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    minimumFractionDigits: 0,
-  });
-}
-
  const formatarPreco = (v: any) =>
     Number(v || 0).toLocaleString("pt-BR", {
       style: "currency",

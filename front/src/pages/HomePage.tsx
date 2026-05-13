@@ -313,9 +313,9 @@ export default function HomePage() {
 
               <select value={preco} onChange={(e) => setPreco(e.target.value)}>
                 <option value="">Preço</option>
-                <option value="200k">Até R$ 200k</option>
-                <option value="500k">Até R$ 500k</option>
-                <option value="500k+">Acima de R$ 500k</option>
+                <option value="200k">Até R$ 200 mil</option>
+                <option value="500k">Até R$ 500 mil</option>
+                <option value="500k+">Acima de R$ 500 mil</option>
               </select>
 
               <select

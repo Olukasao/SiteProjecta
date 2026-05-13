@@ -65,14 +65,6 @@ const DIFERENCIAIS = [
   { nome: "Salão de festas", icon: <PartyPopper size={14} /> },
 ];
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function formatBRL(valor: number) {
-  return valor.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    minimumFractionDigits: 0,
-  });
-}
 const formatarPreco = (v: any) =>
   Number(v || 0).toLocaleString("pt-BR", {
     style: "currency",
