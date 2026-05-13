@@ -10,8 +10,7 @@ import {
     Eye,
     Save,
     Upload,
-    Car,
-    ChefHat,
+    Car
 } from "lucide-react";
 import "./styles/CadProperty.css";
 import { api } from "../services/api";

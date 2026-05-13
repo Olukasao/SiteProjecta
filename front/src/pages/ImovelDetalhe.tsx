@@ -69,6 +69,12 @@ function formatBRL(value: number | string) {
   });
 }
 
+ const formatarPreco = (v: any) =>
+    Number(v || 0).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function ImovelDetalhe() {
   const { id } = useParams<{ id: string }>();
@@ -325,20 +331,20 @@ export default function ImovelDetalhe() {
             <div className="price-box">
               <div className="price-row destaque">
                 <span>Valor</span>
-                <strong>{formatBRL(imovel.preco)}</strong>
+                <strong>{formatarPreco(imovel.preco)}</strong>
               </div>
 
               {Number(imovel.precoCondominio) > 0 && (
                 <div className="price-row">
                   <span>Condomínio</span>
-                  <strong>{formatBRL(imovel.precoCondominio)}/mês</strong>
+                  <strong>{formatarPreco(imovel.precoCondominio)}/mês</strong>
                 </div>
               )}
 
               {Number(imovel.precoIptu) > 0 && (
                 <div className="price-row">
                   <span>IPTU</span>
-                  <strong>{formatBRL(imovel.precoIptu)}/ano</strong>
+                  <strong>{formatarPreco(imovel.precoIptu)}/ano</strong>
                 </div>
               )}
             </div>

@@ -39,6 +39,28 @@ interface FilePreview {
     url: string;
 }
 
+// ========================= HELPERS =========================
+function normalizeImagens(raw: unknown): string[] {
+    if (!raw) return [];
+
+    if (typeof raw === "string") {
+        return raw.split(",").map((s) => s.trim()).filter(Boolean);
+    }
+
+    if (Array.isArray(raw)) {
+        return raw
+            .map((item) => {
+                if (typeof item === "string") return item.trim();
+                if (item && typeof item === "object" && "url" in item) return String(item.url).trim();
+                return "";
+            })
+            .filter(Boolean);
+    }
+
+    return [];
+}
+
+// ========================= COMPONENT =========================
 export default function EditImovel() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -46,6 +68,7 @@ export default function EditImovel() {
     const [files, setFiles] = useState<FilePreview[]>([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [selectedImg, setSelectedImg] = useState<string>("");
 
     const [form, setForm] = useState<FormState>({
@@ -72,40 +95,41 @@ export default function EditImovel() {
     useEffect(() => {
         async function load() {
             try {
-                const res = await api.get(`/imovel/${id}`);
-                const data = res.data;
+                const { data } = await api.get(`/imovel/${id}`);
 
-                const imagens: string[] = Array.isArray(data.imagens)
-                    ? data.imagens
-                    : (data.imagens?.split(",") || []);
+                const imagens = normalizeImagens(data.imagens);
 
                 setForm({
                     titulo: data.titulo || "",
-                    preco: data.preco || "",
+                    preco: String(data.preco || ""),
                     descricao: data.descricao || "",
-                    quartos: data.quartos || "",
-                    suites: data.suites || "",
-                    banheiros: data.banheiros || "",
-                    vagas: data.vagas || "",
-                    area: data.area || "",
+                    quartos: String(data.quartos || ""),
+                    suites: String(data.suites || ""),
+                    banheiros: String(data.banheiros || ""),
+                    vagas: String(data.vagas || ""),
+                    area: String(data.area || ""),
                     cidade: data.cidade || "",
                     bairro: data.bairro || "",
                     endereco: data.endereco || "",
                     cep: data.cep || "",
                     tipo: data.tipo || "",
-                    precoCondominio: data.preco_condominio || "",
-                    precoIptu: data.preco_iptu || "",
-                    diferenciais: data.diferenciais || [],
+                    precoCondominio: String(data.preco_condominio || ""),
+                    precoIptu: String(data.preco_iptu || ""),
+                    diferenciais: Array.isArray(data.diferenciais)
+                        ? data.diferenciais
+                        : [],
                     imagens,
                 });
 
                 setSelectedImg(imagens[0] || "");
             } catch (err) {
                 console.error(err);
+                setError("Não foi possível carregar o imóvel.");
             } finally {
                 setLoading(false);
             }
         }
+
         load();
     }, [id]);
 
@@ -118,32 +142,44 @@ export default function EditImovel() {
     }
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const selected = Array.from(e.target.files || []) as File[];
+        const selected = Array.from(e.target.files || []);
         const previews: FilePreview[] = selected.map((file) => ({
             file,
             url: URL.createObjectURL(file),
         }));
         setFiles((prev) => [...prev, ...previews]);
+        // Limpa o input para permitir re-upload do mesmo arquivo
+        e.target.value = "";
     }
 
     function removeExistingImage(index: number) {
         setForm((prev) => {
-            const imgs = prev.imagens.filter((_, i) => i !== index);
-            if (selectedImg === prev.imagens[index]) {
-                setSelectedImg(imgs[0] || "");
+            const removed = prev.imagens[index];
+            const imagens = prev.imagens.filter((_, i) => i !== index);
+            if (selectedImg === removed) {
+                setSelectedImg(imagens[0] || files[0]?.url || "");
             }
-            return { ...prev, imagens: imgs };
+            return { ...prev, imagens };
         });
     }
 
     function removeNewImage(index: number) {
-        setFiles((prev) => prev.filter((_, i) => i !== index));
+        setFiles((prev) => {
+            const removed = prev[index];
+            if (selectedImg === removed.url) {
+                const remaining = prev.filter((_, i) => i !== index);
+                setSelectedImg(form.imagens[0] || remaining[0]?.url || "");
+            }
+            URL.revokeObjectURL(removed.url);
+            return prev.filter((_, i) => i !== index);
+        });
     }
 
     // ========================= SUBMIT =========================
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setSaving(true);
+        setError(null);
 
         try {
             const formData = new FormData();
@@ -152,15 +188,18 @@ export default function EditImovel() {
             formData.append("preco", form.preco);
             formData.append("descricao", form.descricao);
             formData.append("tipo", form.tipo);
+            formData.append("status", "ativo");
             formData.append("precoCondominio", form.precoCondominio);
             formData.append("precoIptu", form.precoIptu);
             formData.append("diferenciais", JSON.stringify(form.diferenciais));
+
             formData.append("endereco", JSON.stringify({
                 cidade: form.cidade,
                 bairro: form.bairro,
                 cep: form.cep,
                 rua: form.endereco,
             }));
+
             formData.append("detalhes", JSON.stringify({
                 quartos: form.quartos,
                 suites: form.suites,
@@ -168,24 +207,27 @@ export default function EditImovel() {
                 vagas: form.vagas,
                 area: form.area,
             }));
-            formData.append("imagensAntigas", JSON.stringify(form.imagens));
+
+            // ✅ Chave correta: "imagens" (URLs existentes que devem ser mantidas)
+            formData.append("imagens", JSON.stringify(form.imagens));
+
+            // ✅ Arquivos novos também com chave "imagens" (multer separa automaticamente)
             files.forEach(({ file }) => formData.append("imagens", file));
 
             await api.put(`/imoveis/${id}`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
-            alert("Imóvel atualizado com sucesso!");
             navigate("/admin/imoveis");
         } catch (err) {
             console.error(err);
-            alert("Erro ao atualizar imóvel");
+            setError("Erro ao salvar o imóvel. Tente novamente.");
         } finally {
             setSaving(false);
         }
     }
 
-    // ========================= LOADING STATE =========================
+    // ========================= STATES =========================
     if (loading) {
         return (
             <div className="loading-state">
@@ -194,11 +236,16 @@ export default function EditImovel() {
         );
     }
 
-    const allImages = [
-        ...form.imagens.map((url) => ({ url, isNew: false })),
-        ...files.map(({ url }) => ({ url, isNew: true })),
-    ];
+    if (error && !saving) {
+        return (
+            <div className="loading-state">
+                <span>{error}</span>
+                <button onClick={() => navigate("/admin/imoveis")}>Voltar</button>
+            </div>
+        );
+    }
 
+    // ========================= RENDER =========================
     return (
         <div className="edit-container">
 
@@ -214,6 +261,10 @@ export default function EditImovel() {
                     Voltar
                 </button>
             </div>
+
+            {error && (
+                <div className="form-error-banner">{error}</div>
+            )}
 
             <form className="edit-form" onSubmit={handleSubmit}>
 
@@ -238,7 +289,7 @@ export default function EditImovel() {
                         Gerenciar imagens
                     </p>
 
-                    {allImages.length > 0 && (
+                    {(form.imagens.length > 0 || files.length > 0) && (
                         <div className="images-grid">
                             {form.imagens.map((img, index) => (
                                 <div
@@ -250,7 +301,10 @@ export default function EditImovel() {
                                     <button
                                         type="button"
                                         className="remove-btn"
-                                        onClick={(e) => { e.stopPropagation(); removeExistingImage(index); }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeExistingImage(index);
+                                        }}
                                     >
                                         ✕
                                     </button>
@@ -258,12 +312,19 @@ export default function EditImovel() {
                             ))}
 
                             {files.map((f, index) => (
-                                <div key={`new-${index}`} className="image-card">
+                                <div
+                                    key={`new-${index}`}
+                                    className={`image-card ${selectedImg === f.url ? "is-selected" : ""}`}
+                                    onClick={() => setSelectedImg(f.url)}
+                                >
                                     <img src={f.url} className="mini-img" alt={`nova-${index}`} />
                                     <button
                                         type="button"
                                         className="remove-btn"
-                                        onClick={() => removeNewImage(index)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            removeNewImage(index);
+                                        }}
                                     >
                                         ✕
                                     </button>
@@ -272,7 +333,11 @@ export default function EditImovel() {
                         </div>
                     )}
 
-                    <label className="upload-label" htmlFor="file-upload" style={{ marginTop: allImages.length > 0 ? "1rem" : "0" }}>
+                    <label
+                        className="upload-label"
+                        htmlFor="file-upload"
+                        style={{ marginTop: form.imagens.length > 0 || files.length > 0 ? "1rem" : "0" }}
+                    >
                         <Upload size={15} />
                         <span>Adicionar novas imagens</span>
                         <input
@@ -323,7 +388,7 @@ export default function EditImovel() {
                                 name="descricao"
                                 value={form.descricao}
                                 onChange={handleChange}
-                                placeholder="Descreva os pontos fortes do imóvel, acabamentos, localização..."
+                                placeholder="Descreva os pontos fortes do imóvel..."
                             />
                         </div>
                     </div>
@@ -339,33 +404,15 @@ export default function EditImovel() {
                     <div className="grid-3">
                         <div className="input-group">
                             <label htmlFor="preco">Preço principal</label>
-                            <input
-                                id="preco"
-                                name="preco"
-                                value={form.preco}
-                                onChange={handleChange}
-                                placeholder="R$ 0,00"
-                            />
+                            <input id="preco" name="preco" value={form.preco} onChange={handleChange} placeholder="R$ 0,00" />
                         </div>
                         <div className="input-group">
                             <label htmlFor="precoCondominio">Condomínio</label>
-                            <input
-                                id="precoCondominio"
-                                name="precoCondominio"
-                                value={form.precoCondominio}
-                                onChange={handleChange}
-                                placeholder="R$ 0,00 / mês"
-                            />
+                            <input id="precoCondominio" name="precoCondominio" value={form.precoCondominio} onChange={handleChange} placeholder="R$ 0,00 / mês" />
                         </div>
                         <div className="input-group">
                             <label htmlFor="precoIptu">IPTU</label>
-                            <input
-                                id="precoIptu"
-                                name="precoIptu"
-                                value={form.precoIptu}
-                                onChange={handleChange}
-                                placeholder="R$ 0,00 / ano"
-                            />
+                            <input id="precoIptu" name="precoIptu" value={form.precoIptu} onChange={handleChange} placeholder="R$ 0,00 / ano" />
                         </div>
                     </div>
                 </div>
@@ -380,53 +427,23 @@ export default function EditImovel() {
                     <div className="grid-3">
                         <div className="input-group">
                             <label htmlFor="quartos">Dormitórios</label>
-                            <input
-                                id="quartos"
-                                name="quartos"
-                                value={form.quartos}
-                                onChange={handleChange}
-                                placeholder="0"
-                            />
+                            <input id="quartos" name="quartos" value={form.quartos} onChange={handleChange} placeholder="0" />
                         </div>
                         <div className="input-group">
                             <label htmlFor="suites">Suítes</label>
-                            <input
-                                id="suites"
-                                name="suites"
-                                value={form.suites}
-                                onChange={handleChange}
-                                placeholder="0"
-                            />
+                            <input id="suites" name="suites" value={form.suites} onChange={handleChange} placeholder="0" />
                         </div>
                         <div className="input-group">
                             <label htmlFor="banheiros">Banheiros</label>
-                            <input
-                                id="banheiros"
-                                name="banheiros"
-                                value={form.banheiros}
-                                onChange={handleChange}
-                                placeholder="0"
-                            />
+                            <input id="banheiros" name="banheiros" value={form.banheiros} onChange={handleChange} placeholder="0" />
                         </div>
                         <div className="input-group">
                             <label htmlFor="vagas">Vagas de garagem</label>
-                            <input
-                                id="vagas"
-                                name="vagas"
-                                value={form.vagas}
-                                onChange={handleChange}
-                                placeholder="0"
-                            />
+                            <input id="vagas" name="vagas" value={form.vagas} onChange={handleChange} placeholder="0" />
                         </div>
                         <div className="input-group">
                             <label htmlFor="area">Área (m²)</label>
-                            <input
-                                id="area"
-                                name="area"
-                                value={form.area}
-                                onChange={handleChange}
-                                placeholder="Ex: 120"
-                            />
+                            <input id="area" name="area" value={form.area} onChange={handleChange} placeholder="Ex: 120" />
                         </div>
                     </div>
                 </div>
@@ -442,46 +459,22 @@ export default function EditImovel() {
                         <div className="grid-3">
                             <div className="input-group">
                                 <label htmlFor="cep">CEP</label>
-                                <input
-                                    id="cep"
-                                    name="cep"
-                                    value={form.cep}
-                                    onChange={handleChange}
-                                    placeholder="00000-000"
-                                />
+                                <input id="cep" name="cep" value={form.cep} onChange={handleChange} placeholder="00000-000" />
                             </div>
                             <div className="input-group" style={{ gridColumn: "span 2" }}>
                                 <label htmlFor="endereco">Rua / Logradouro</label>
-                                <input
-                                    id="endereco"
-                                    name="endereco"
-                                    value={form.endereco}
-                                    onChange={handleChange}
-                                    placeholder="Rua das Flores, 123"
-                                />
+                                <input id="endereco" name="endereco" value={form.endereco} onChange={handleChange} placeholder="Rua das Flores, 123" />
                             </div>
                         </div>
 
                         <div className="grid-2">
                             <div className="input-group">
                                 <label htmlFor="bairro">Bairro</label>
-                                <input
-                                    id="bairro"
-                                    name="bairro"
-                                    value={form.bairro}
-                                    onChange={handleChange}
-                                    placeholder="Centro"
-                                />
+                                <input id="bairro" name="bairro" value={form.bairro} onChange={handleChange} placeholder="Centro" />
                             </div>
                             <div className="input-group">
                                 <label htmlFor="cidade">Cidade</label>
-                                <input
-                                    id="cidade"
-                                    name="cidade"
-                                    value={form.cidade}
-                                    onChange={handleChange}
-                                    placeholder="São Paulo"
-                                />
+                                <input id="cidade" name="cidade" value={form.cidade} onChange={handleChange} placeholder="São Paulo" />
                             </div>
                         </div>
                     </div>
@@ -500,11 +493,14 @@ export default function EditImovel() {
                             id="diferenciais"
                             type="text"
                             placeholder="Piscina, Churrasqueira, Academia..."
-                            value={form.diferenciais?.join(", ") || ""}
+                            value={form.diferenciais.join(", ")}
                             onChange={(e) =>
                                 setForm((prev) => ({
                                     ...prev,
-                                    diferenciais: e.target.value.split(",").map((i) => i.trim()).filter(Boolean),
+                                    diferenciais: e.target.value
+                                        .split(",")
+                                        .map((i) => i.trim())
+                                        .filter(Boolean),
                                 }))
                             }
                         />
@@ -518,6 +514,7 @@ export default function EditImovel() {
                         type="button"
                         className="btn-secondary"
                         onClick={() => navigate("/admin/imoveis")}
+                        disabled={saving}
                     >
                         Cancelar
                     </button>

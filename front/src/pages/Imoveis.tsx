@@ -55,14 +55,14 @@ const FILTROS_INICIAIS: Filtros = {
 };
 
 const DIFERENCIAIS = [
-  { nome: "Piscina",        icon: <Waves size={14} /> },
-  { nome: "Churrasqueira",  icon: <Flame size={14} /> },
-  { nome: "Academia",       icon: <Dumbbell size={14} /> },
-  { nome: "Portaria 24h",   icon: <ShieldCheck size={14} /> },
-  { nome: "Elevador",       icon: <Building size={14} /> },
-  { nome: "Pet friendly",   icon: <Dog size={14} /> },
-  { nome: "Mobiliado",      icon: <Sofa size={14} /> },
-  { nome: "Salão de festas",icon: <PartyPopper size={14} /> },
+  { nome: "Piscina", icon: <Waves size={14} /> },
+  { nome: "Churrasqueira", icon: <Flame size={14} /> },
+  { nome: "Academia", icon: <Dumbbell size={14} /> },
+  { nome: "Portaria 24h", icon: <ShieldCheck size={14} /> },
+  { nome: "Elevador", icon: <Building size={14} /> },
+  { nome: "Pet friendly", icon: <Dog size={14} /> },
+  { nome: "Mobiliado", icon: <Sofa size={14} /> },
+  { nome: "Salão de festas", icon: <PartyPopper size={14} /> },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -73,6 +73,11 @@ function formatBRL(valor: number) {
     minimumFractionDigits: 0,
   });
 }
+const formatarPreco = (v: any) =>
+  Number(v || 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 function SkeletonGrid() {
@@ -145,15 +150,15 @@ export default function Imoveis() {
       if (texto && ![im.titulo, im.cidade, im.bairro, im.endereco]
         .some(v => v?.toLowerCase().includes(texto))) return false;
 
-      if (filtros.tipo   && im.tipo   !== filtros.tipo)   return false;
+      if (filtros.tipo && im.tipo !== filtros.tipo) return false;
       if (filtros.status && im.status !== filtros.status) return false;
 
       if (filtros.precoMin && im.preco < Number(filtros.precoMin)) return false;
       if (filtros.precoMax && im.preco > Number(filtros.precoMax)) return false;
 
-      if (filtros.quartos   && im.quartos   < Number(filtros.quartos))   return false;
+      if (filtros.quartos && im.quartos < Number(filtros.quartos)) return false;
       if (filtros.banheiros && im.banheiros < Number(filtros.banheiros)) return false;
-      if (filtros.vagas     && im.vagas     < Number(filtros.vagas))     return false;
+      if (filtros.vagas && im.vagas < Number(filtros.vagas)) return false;
 
       if (filtros.areaMin && im.area < Number(filtros.areaMin)) return false;
       if (filtros.areaMax && im.area > Number(filtros.areaMax)) return false;
@@ -357,7 +362,7 @@ export default function Imoveis() {
                     <div className="property-info">
                       <h3 className="card-title">{imovel.titulo}</h3>
 
-                      <p className="card-price">{formatBRL(imovel.preco)}</p>
+                      <p className="card-price">{formatarPreco(imovel.preco)}</p>
 
                       <p className="card-location">
                         <MapPin size={12} />

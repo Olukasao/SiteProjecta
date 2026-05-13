@@ -45,7 +45,11 @@ export default function Header() {
           </nav>
 
           {/* BOTÃO DESKTOP */}
-          <button className="btn-primary-header" onClick={()=>window.open("https://wa.me/5511993878619","_blank")}>
+          <button
+            type="button"
+            className="btn-primary-header"
+            onClick={() => window.open("https://wa.me/5511993878619", "_blank")}
+          >
             Fale Conosco
           </button>
 
@@ -60,18 +64,17 @@ export default function Header() {
           </div>
 
         </div>
-      </header >
+      </header>
 
       {/* OVERLAY */}
-      < div
-        className={`overlay ${open ? "show" : ""}`
-        }
+      <div
+        className={`overlay ${open ? "show" : ""}`}
         onClick={() => setOpen(false)}
       />
 
       {/* MENU MOBILE */}
       <div className={`mobile-menu ${open ? "open" : ""}`}>
-        <button className="close-btn" onClick={() => setOpen(false)}>
+        <button type="button" className="close-btn" onClick={() => setOpen(false)}>
           ✕
         </button>
 
@@ -82,7 +85,11 @@ export default function Header() {
         <Link to="/area-cliente/login" onClick={() => setOpen(false)} className="area" >Área do Cliente</Link>
 
 
-        <button className="btn-primary">
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={() => window.open("https://wa.me/5511993878619", "_blank")}
+        >
           Fale Conosco
         </button>
       </div>

@@ -50,7 +50,10 @@ export default function ListProperty() {
   }, [imoveis, busca, tipo]);
 
   const formatarPreco = (v: any) =>
-    Number(v || 0).toLocaleString("pt-BR");
+    Number(v || 0).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
 
   return (
     <div className="container-list">
@@ -94,7 +97,7 @@ export default function ListProperty() {
                 <h3>{imovel.titulo}</h3>
 
                 <p className="price">
-                  R$ {formatarPreco(imovel.preco)}
+                  {formatarPreco(imovel.preco)}
                 </p>
 
                 <p className="location">

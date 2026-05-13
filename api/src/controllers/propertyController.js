@@ -253,7 +253,7 @@ const atualizarImovel = (req, res) => {
   } = req.body;
 
   // =========================
-  // 🔥 SAFE STRING
+  // SAFE STRING / SLUG
   // =========================
   const nomeSafe = (nome || "").trim() || "sem-nome";
 
@@ -265,7 +265,7 @@ const atualizarImovel = (req, res) => {
     .replace(/(^-|-$)/g, "");
 
   // =========================
-  // 🔥 SAFE JSON
+  // SAFE JSON
   // =========================
   const safeParse = (data) => {
     if (!data) return {};
@@ -281,7 +281,7 @@ const atualizarImovel = (req, res) => {
   const detalhes = safeParse(req.body.detalhes);
 
   // =========================
-  // 🔥 DIFERENCIAIS
+  // DIFERENCIAIS
   // =========================
   let diferenciaisSafe = [];
   try {
@@ -293,47 +293,47 @@ const atualizarImovel = (req, res) => {
   }
 
   // =========================
-  // 🔥 TIPO SAFE
+  // TIPO SAFE
   // =========================
-  const tiposValidos = ['casa', 'apartamento', 'terreno', 'comercial'];
-  const tipoSafe = tiposValidos.includes(tipo) ? tipo : 'casa';
+  const tiposValidos = ["casa", "apartamento", "terreno", "comercial"];
+  const tipoSafe = tiposValidos.includes(tipo) ? tipo : "casa";
 
   // =========================
-  // 🔥 IMAGENS
+  // IMAGENS — combina existentes + novas
   // =========================
-  let imagens = [];
+  const baseUrl = process.env.BASE_URL || "http://localhost:3500";
 
+  // 1️⃣ URLs que já existiam (o frontend manda de volta as que quer manter)
+  let imagensExistentes = [];
   if (req.body.imagens) {
-    if (typeof req.body.imagens === "string") {
-      try {
-        imagens = JSON.parse(req.body.imagens);
-      } catch {
-        imagens = [];
-      }
-    } else {
-      imagens = req.body.imagens;
+    try {
+      imagensExistentes = typeof req.body.imagens === "string"
+        ? JSON.parse(req.body.imagens)
+        : req.body.imagens;
+    } catch {
+      imagensExistentes = [];
     }
   }
-    const baseUrl = process.env.BASE_URL ||"http://localhost:3500" ;
 
+  // 2️⃣ Arquivos novos enviados via upload
+  const imagensNovas = req.files?.length > 0
+    ? req.files.map(file => `${baseUrl}/uploads/${file.filename}`)
+    : [];
 
-
-  if (req.files && req.files.length > 0) {
-    imagens = req.files.map(file =>
-      `${baseUrl}/uploads/${file.filename}`
-    );
-  }
-
-  const cleanImgs = (imagens || []).filter(
+  // 3️⃣ Junta tudo e filtra valores inválidos
+  const cleanImgs = [...imagensExistentes, ...imagensNovas].filter(
     img => typeof img === "string" && img.trim()
   );
 
+  // =========================
+  // ENDEREÇO
+  // =========================
   const cep = endereco?.cep || "";
   const lat = endereco?.lat || null;
   const lng = endereco?.lng || null;
 
   // =========================
-  // 🔥 UPDATE IMOVEL (COMPLETO)
+  // UPDATE IMOVEL
   // =========================
   db.query(
     `UPDATE imoveis SET 
@@ -374,11 +374,11 @@ const atualizarImovel = (req, res) => {
     (err) => {
       if (err) {
         console.error(err);
-        return res.status(500).json(err);
+        return res.status(500).json({ error: "Erro ao atualizar imóvel", detail: err });
       }
 
       // =========================
-      // 🔥 DETALHES (AGORA COM SUITES)
+      // UPDATE DETALHES
       // =========================
       db.query(
         `UPDATE imovel_detalhes SET 
@@ -395,25 +395,39 @@ const atualizarImovel = (req, res) => {
           detalhes.vagas || 0,
           detalhes.area || 0,
           id
-        ]
+        ],
+        (err) => {
+          if (err) console.error("Erro ao atualizar detalhes:", err);
+        }
       );
 
       // =========================
-      // 🔥 IMAGENS (REPLACE)
+      // REPLACE IMAGENS
       // =========================
-      db.query("DELETE FROM imovel_imagens WHERE imovel_id=?", [id], () => {
-        if (cleanImgs.length > 0) {
-          const values = cleanImgs.map(img => [id, img]);
-
-          db.query(
-            "INSERT INTO imovel_imagens (imovel_id, url) VALUES ?",
-            [values]
-          );
+      db.query("DELETE FROM imovel_imagens WHERE imovel_id=?", [id], (err) => {
+        if (err) {
+          console.error("Erro ao deletar imagens:", err);
+          return res.status(500).json({ error: "Erro ao atualizar imagens" });
         }
-      });
 
-      return res.json({
-        message: "Imóvel atualizado com sucesso"
+        if (cleanImgs.length === 0) {
+          return res.json({ message: "Imóvel atualizado com sucesso" });
+        }
+
+        const values = cleanImgs.map(img => [id, img]);
+
+        db.query(
+          "INSERT INTO imovel_imagens (imovel_id, url) VALUES ?",
+          [values],
+          (err) => {
+            if (err) {
+              console.error("Erro ao inserir imagens:", err);
+              return res.status(500).json({ error: "Erro ao salvar imagens" });
+            }
+
+            return res.json({ message: "Imóvel atualizado com sucesso" });
+          }
+        );
       });
     }
   );
