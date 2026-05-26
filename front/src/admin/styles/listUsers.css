@@ -153,6 +153,9 @@ tr:hover {
 }
 
 .btn-password {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     background: #16a34a;
     color: white;
     border: none;

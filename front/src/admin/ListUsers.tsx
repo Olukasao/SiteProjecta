@@ -3,6 +3,7 @@ import type { ChangeEvent } from "react";
 import { api } from "../services/api";
 import "./styles/listUsers.css";
 import { Link, useNavigate } from "react-router-dom";
+import { KeyRound } from "lucide-react";
 
 type User = {
     id: number;
@@ -25,7 +26,7 @@ export default function ListUsers() {
     const navigate = useNavigate();
 
     const currentUser = JSON.parse(localStorage.getItem("user") || "null");
-    const canDelete = currentUser?.role === "admin";
+    const canManageUsers = currentUser?.role === "admin";
 
 
     function formatDate(date: string) {
@@ -153,11 +154,16 @@ export default function ListUsers() {
                                                 <button className="btn-edit">Editar</button>
                                             </Link>
 
-                                            <Link to={`/admin/usuarios/redefinir-senha/${user.id}`} style={{ textDecoration: "none" }}>
-                                                <button className="btn-password">Senha</button>
-                                            </Link>
+                                            {canManageUsers && (
+                                                <Link to={`/admin/usuarios/redefinir-senha/${user.id}`} style={{ textDecoration: "none" }}>
+                                                    <button className="btn-password" type="button">
+                                                        <KeyRound size={14} />
+                                                        Alterar senha
+                                                    </button>
+                                                </Link>
+                                            )}
 
-                                            {canDelete && (
+                                            {canManageUsers && (
                                                 <button
                                                     className="btn-delete"
                                                     disabled={deletingId === user.id}

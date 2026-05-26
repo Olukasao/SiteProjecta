@@ -17,6 +17,7 @@ type Errors = {
 export default function ResetUserPassword() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const currentUser = JSON.parse(localStorage.getItem("user") || "null");
 
     const [user, setUser] = useState<UserDetails | null>(null);
     const [senha, setSenha] = useState("");
@@ -89,6 +90,17 @@ export default function ResetUserPassword() {
     useEffect(() => {
         getUser();
     }, [id]);
+
+    if (currentUser?.role !== "admin") {
+        return (
+            <div className="cad-container">
+                <div className="cad-error">Acesso restrito a administradores.</div>
+                <button type="button" className="btn-secondary" onClick={() => navigate("/admin/dashboard")}>
+                    Voltar
+                </button>
+            </div>
+        );
+    }
 
     if (loading) return <p>Carregando...</p>;
 

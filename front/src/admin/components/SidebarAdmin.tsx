@@ -29,17 +29,19 @@ export default function SidebarAdmin({ user }: SidebarAdminProps) {
                         <Link to="/admin/imoveis/cadastrar">Cadastrar Imóvel</Link>
                     </div>
                 )}
-                <div  >
-                    <div className="menu-title" onClick={() => setOpenUsuarios(!openUsuarios)}>
-                        Usuarios ▾
-                    </div>
-                    {openUsuarios && (
-                        <div className="submenu">
-                            <Link to="/admin/usuarios">Listar Usuarios</Link>
-                            <Link to="/admin/usuarios/cadastrar">Cadastrar Usuario</Link>
+                {isAdmin && (
+                    <div>
+                        <div className="menu-title" onClick={() => setOpenUsuarios(!openUsuarios)}>
+                            Usuarios ▾
                         </div>
-                    )}
-                </div>
+                        {openUsuarios && (
+                            <div className="submenu">
+                                <Link to="/admin/usuarios">Listar Usuarios</Link>
+                                <Link to="/admin/usuarios/cadastrar">Cadastrar Usuario</Link>
+                            </div>
+                        )}
+                    </div>
+                )}
                 {isAdmin && (
                     <Link to="/admin/auditoria">Auditoria</Link>
                 )}
