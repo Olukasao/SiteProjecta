@@ -11,7 +11,7 @@ const login = (req, res) => {
   }
 
   db.query(
-    "SELECT id, nome, email, senha FROM admins WHERE email = ? LIMIT 1",
+    "SELECT id, nome, username, email, senha, role, status FROM admins WHERE email = ? LIMIT 1",
     [email],
     async (err, results) => {
       if (err) {
@@ -25,6 +25,10 @@ const login = (req, res) => {
 
       const user = results[0];
 
+      if (user.status && user.status !== "active") {
+        return res.status(403).json({ error: "Usuário sem acesso" });
+      }
+
       try {
         const senhaValida = await bcrypt.compare(senha, user.senha);
 
@@ -35,7 +39,8 @@ const login = (req, res) => {
         const token = jwt.sign(
           {
             id: user.id,
-            email: user.email
+            email: user.email,
+            role: user.role
           },
           process.env.JWT_SECRET || "segredo",
           { expiresIn: "1d" }
@@ -47,7 +52,9 @@ const login = (req, res) => {
           user: {
             id: user.id,
             nome: user.nome,
-            email: user.email
+            username: user.username,
+            email: user.email,
+            role: user.role
           }
         });
 

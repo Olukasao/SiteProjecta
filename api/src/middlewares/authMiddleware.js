@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const db = require("../database/db");
 
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -15,14 +16,46 @@ const authMiddleware = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, "segredo");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "segredo");
 
-    req.user = decoded; // 💎 útil depois
+    db.query(
+      `
+        SELECT id, nome, username, email, role, status
+        FROM admins
+        WHERE id = ?
+        LIMIT 1
+      `,
+      [decoded.id],
+      (err, results) => {
+        if (err) {
+          return res.status(500).json({ error: "Erro ao validar usuário" });
+        }
 
-    next();
+        if (!results.length) {
+          return res.status(401).json({ error: "Usuário não encontrado" });
+        }
+
+        const user = results[0];
+
+        if (user.status && user.status !== "active") {
+          return res.status(403).json({ error: "Usuário sem acesso" });
+        }
+
+        req.user = user;
+        next();
+      }
+    );
   } catch (err) {
     return res.status(401).json({ error: "Token inválido" });
   }
 };
 
-module.exports = { authMiddleware };
+const requireAdmin = (req, res, next) => {
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({ error: "Acesso restrito a administradores" });
+  }
+
+  return next();
+};
+
+module.exports = { authMiddleware, requireAdmin };

@@ -8,15 +8,19 @@ const {
     atualizarImovel
 } = require("../controllers/propertyController");
 
-const { getUsers, getUserById, updateUser, createUser } = require("../controllers/usersController");
+const { getUsers, getUserById, updateUser, createUser, resetUserPassword, deleteUser } = require("../controllers/usersController");
+const { getAuditLogs } = require("../controllers/auditController");
 
-const { authMiddleware } = require("../middlewares/authMiddleware");
+const { authMiddleware, requireAdmin } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 const upload = require("../upload");
 
 
 router.post("/login", login);
+router.get("/me", authMiddleware, (req, res) => {
+    res.json(req.user);
+});
 router.get("/", (req, res) => {
     res.json({ message: "API rodando 🚀" });
 });
@@ -36,6 +40,11 @@ router.get("/usuarios/", authMiddleware, getUsers)
 router.get("/usuario/:id", authMiddleware, getUserById)
 router.post("/usuarios/add", authMiddleware, createUser);
 router.put("/usuario/update/:id", authMiddleware, updateUser)
+router.put("/usuario/reset-password/:id", authMiddleware, resetUserPassword)
+router.delete("/usuarios/:id", authMiddleware, requireAdmin, deleteUser)
+
+// auditoria
+router.get("/auditoria", authMiddleware, requireAdmin, getAuditLogs);
 
 
 
