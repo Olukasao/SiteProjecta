@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import "leaflet/dist/leaflet.css";
@@ -81,6 +81,7 @@ export default function ImovelDetalhe() {
   const [shareCopied, setShareCopied] = useState(false);
 
   const [views] = useState(() => Math.floor(Math.random() * 300) + 50);
+  const thumbsRef = useRef<HTMLDivElement | null>(null);
 
   // ── Load ────────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -146,6 +147,13 @@ export default function ImovelDetalhe() {
   function openLightbox(idx: number) {
     setLightboxIdx(idx);
     setLightboxOpen(true);
+  }
+
+  function scrollThumbs(direction: "left" | "right") {
+    thumbsRef.current?.scrollBy({
+      left: direction === "left" ? -240 : 240,
+      behavior: "smooth",
+    });
   }
 
   function handleFavorite() {
@@ -229,16 +237,36 @@ export default function ImovelDetalhe() {
 
           {/* Thumbnails */}
           {images.length > 1 && (
-            <div className="thumbs">
-              {images.map((img: string, i: number) => (
-                <img
-                  key={i}
-                  src={img}
-                  className={selectedImg === img ? "active" : ""}
-                  onClick={() => selectImage(img, i)}
-                  alt={`Miniatura ${i + 1}`}
-                />
-              ))}
+            <div className="thumbs-wrapper">
+              <button
+                type="button"
+                className="thumbs-arrow thumbs-arrow-left"
+                onClick={() => scrollThumbs("left")}
+                aria-label="Ver fotos anteriores"
+              >
+                <ChevronLeft size={20} />
+              </button>
+
+              <div className="thumbs" ref={thumbsRef}>
+                {images.map((img: string, i: number) => (
+                  <img
+                    key={i}
+                    src={img}
+                    className={selectedImg === img ? "active" : ""}
+                    onClick={() => selectImage(img, i)}
+                    alt={`Miniatura ${i + 1}`}
+                  />
+                ))}
+              </div>
+
+              <button
+                type="button"
+                className="thumbs-arrow thumbs-arrow-right"
+                onClick={() => scrollThumbs("right")}
+                aria-label="Ver próximas fotos"
+              >
+                <ChevronRight size={20} />
+              </button>
             </div>
           )}
 

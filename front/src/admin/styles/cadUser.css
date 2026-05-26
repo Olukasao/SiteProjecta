@@ -92,6 +92,46 @@
     font-size: 13px;
 }
 
+.cad-summary {
+    width: 100%;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cad-summary strong {
+    color: #111827;
+    font-size: 15px;
+}
+
+.cad-summary span {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.cad-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.cad-actions button {
+    min-width: 140px;
+}
+
+.btn-secondary {
+    background: #6b7280;
+}
+
+.btn-secondary:hover {
+    background: #4b5563;
+}
+
 /* BOTÃO */
 button {
     margin-top: 10px;

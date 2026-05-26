@@ -12,6 +12,8 @@ import ListUsers from "../admin/ListUsers";
 import EditImovel from "../admin/EditImove";
 import CadUser from "../admin/CadUser";
 import EditUser from "../admin/EditUser";
+import ResetUserPassword from "../admin/ResetUserPassword";
+import AuditLogs from "../admin/AuditLogs";
 
 export default function AdminRoutes() {
     return (
@@ -36,7 +38,9 @@ export default function AdminRoutes() {
                 <Route path="usuarios" element={<ListUsers />} />
                 <Route path="usuarios/cadastrar" element={<CadUser />} />
                 <Route path="usuarios/editar/:id" element={<EditUser />} />
+                <Route path="usuarios/redefinir-senha/:id" element={<ResetUserPassword />} />
                 <Route path="imoveis/editar/:id" element={<EditImovel />} />
+                <Route path="auditoria" element={<AuditLogs />} />
 
                 <Route path="preview-imovel" element={<PreviewProperty />} />
             </Route>

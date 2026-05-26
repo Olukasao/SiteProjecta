@@ -266,7 +266,7 @@ export default function HomePage() {
           <div className="search">
             <input
               type="text"
-              placeholder="Buscar por cidade, bairro ou título..."
+              placeholder="Cidade, bairro ou título..."
               value={busca}
               onChange={(e) => handleBusca(e.target.value)}
               onKeyDown={(e) => {
@@ -278,96 +278,93 @@ export default function HomePage() {
             />
             <button type="button" onClick={aplicarBusca}>Buscar</button>
           </div>
-
-          <p className="hero-trust">
-            Compra segura • Imóveis selecionados • Atendimento especializado
-          </p>
-        </div>
-      </section>
-
-      {/* FILTROS */}
-      <section className="section filters-section">
-        <div className="container">
-          <div className="filters-panel">
-            <div className="filters-header">
-              <div className="filters-title">
-                <h2>Filtros</h2>
-                <p>Refine sua busca para encontrar o imóvel ideal.</p>
-              </div>
-
-              {temFiltroAtivo && (
-                <button className="btn-limpar" onClick={limparFiltros}>
-                  Limpar filtros
-                </button>
-              )}
-            </div>
-
-            <div className="filters">
-              <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
-                <option value="">Tipo</option>
-                <option value="casa">Casa</option>
-                <option value="apartamento">Apartamento</option>
-                <option value="terreno">Terreno</option>
-                <option value="comercial">Comercial</option>
-              </select>
-
-              <select value={preco} onChange={(e) => setPreco(e.target.value)}>
-                <option value="">Preço</option>
-                <option value="200k">Até R$ 200 mil</option>
-                <option value="500k">Até R$ 500 mil</option>
-                <option value="500k+">Acima de R$ 500 mil</option>
-              </select>
-
-              <select
-                value={quartos}
-                onChange={(e) => setQuartos(Number(e.target.value))}
-              >
-                <option value={0}>Quartos</option>
-                <option value={1}>1+</option>
-                <option value={2}>2+</option>
-                <option value={3}>3+</option>
-                <option value={4}>4+</option>
-              </select>
-            </div>
-          </div>
         </div>
       </section>
 
       {/* LISTA */}
       <section className="section listings-section imoveis-section" ref={imoveisSectionRef}>
         <div className="container">
-          <div className="results-header">
-            <h2>Imóveis</h2>
-            {!loading && (
-              <span className="results-count">
-                {imoveisFiltrados.length} imóvel(is) encontrado(s)
-              </span>
-            )}
-          </div>
-
-          {loading ? (
-            <div className="properties-grid">
-              {[1, 2, 3, 4, 5, 6].map((n) => (
-                <SkeletonCard key={n} />
-              ))}
-            </div>
-          ) : imoveisFiltrados.length === 0 ? (
-            <div className="empty-state">
-              <p>Nenhum imóvel encontrado.</p>
-              {temFiltroAtivo && (
-                <button onClick={limparFiltros}>Limpar filtros</button>
+          <div className="imoveis-shell">
+            <div className="results-header">
+              <div className="results-title">
+                <h2>Imóveis disponíveis</h2>
+                <p>Encontre o imóvel ideal para você.</p>
+              </div>
+              {!loading && (
+                <span className="results-count">
+                  {imoveisFiltrados.length} {imoveisFiltrados.length === 1 ? "imóvel encontrado" : "imóveis encontrados"}
+                </span>
               )}
             </div>
-          ) : (
-            <div className="properties-grid">
-              {imoveisFiltrados.map((imovel) => (
-                <PropertyCard
-                  key={imovel.id}
-                  imovel={imovel}
-                />
-              ))}
+
+            <div className="filters-panel">
+              <div className="filters-header">
+                <span className="filters-label">Filtros</span>
+
+                {temFiltroAtivo && (
+                  <button className="btn-limpar" onClick={limparFiltros}>
+                    Limpar filtros
+                  </button>
+                )}
+              </div>
+
+              <div className="filters">
+                <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
+                  <option value="">Tipo</option>
+                  <option value="casa">Casa</option>
+                  <option value="apartamento">Apartamento</option>
+                  <option value="terreno">Terreno</option>
+                  <option value="comercial">Comercial</option>
+                </select>
+
+                <select value={preco} onChange={(e) => setPreco(e.target.value)}>
+                  <option value="">Preço</option>
+                  <option value="200k">Até R$ 200 mil</option>
+                  <option value="500k">Até R$ 500 mil</option>
+                  <option value="500k+">Acima de R$ 500 mil</option>
+                </select>
+
+                <select
+                  value={quartos}
+                  onChange={(e) => setQuartos(Number(e.target.value))}
+                >
+                  <option value={0}>Quartos</option>
+                  <option value={1}>1+</option>
+                  <option value={2}>2+</option>
+                  <option value={3}>3+</option>
+                  <option value={4}>4+</option>
+                </select>
+
+                <button type="button" className="filters-search-btn" onClick={aplicarBusca}>
+                  Buscar
+                </button>
+              </div>
             </div>
-          )}
+
+            {loading ? (
+              <div className="properties-grid">
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                  <SkeletonCard key={n} />
+                ))}
+              </div>
+            ) : imoveisFiltrados.length === 0 ? (
+              <div className="empty-state">
+                <p>Nenhum imóvel encontrado.</p>
+                {temFiltroAtivo && (
+                  <button onClick={limparFiltros}>Limpar filtros</button>
+                )}
+              </div>
+            ) : (
+              <div className="properties-grid">
+                {imoveisFiltrados.map((imovel) => (
+                  <PropertyCard
+                    key={imovel.id}
+                    imovel={imovel}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 

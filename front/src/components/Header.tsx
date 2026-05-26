@@ -44,14 +44,20 @@ export default function Header() {
 
           </nav>
 
-          {/* BOTÃO DESKTOP */}
-          <button
-            type="button"
-            className="btn-primary-header"
-            onClick={() => window.open("https://wa.me/5511993878619", "_blank")}
-          >
-            Fale Conosco
-          </button>
+          {/* AÇÕES DESKTOP */}
+          <div className="header-actions">
+            <Link to="/admin/login" className="admin-login-link">
+              Login
+            </Link>
+
+            <button
+              type="button"
+              className="btn-primary-header"
+              onClick={() => window.open("https://wa.me/5511993878619", "_blank")}
+            >
+              Fale Conosco
+            </button>
+          </div>
 
           {/* HAMBURGUER */}
           <div
@@ -83,6 +89,7 @@ export default function Header() {
         <Link to="/imoveis" onClick={() => setOpen(false)} >Imóveis</Link>
         <Link to="/financiamento" onClick={() => setOpen(false)} >Financiamento</Link>
         <Link to="/area-cliente/login" onClick={() => setOpen(false)} className="area" >Área do Cliente</Link>
+        <Link to="/admin/login" onClick={() => setOpen(false)} className="admin-mobile-link">Área Admin</Link>
 
 
         <button

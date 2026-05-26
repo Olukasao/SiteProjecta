@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+type SidebarAdminProps = {
+    user?: {
+        role?: string;
+    } | null;
+};
 
-export default function SidebarAdmin() {
+export default function SidebarAdmin({ user }: SidebarAdminProps) {
     const [openImoveis, setOpenImoveis] = useState(false);
     const [openUsuarios, setOpenUsuarios] = useState(false);
+    const isAdmin = user?.role === "admin";
 
     return (
         <div className="sidebar">
@@ -34,6 +40,9 @@ export default function SidebarAdmin() {
                         </div>
                     )}
                 </div>
+                {isAdmin && (
+                    <Link to="/admin/auditoria">Auditoria</Link>
+                )}
                 <div className="menu-title">
                     Configurações
                 </div>

@@ -149,8 +149,12 @@ export default function ListUsers() {
                                         <td>{formatDate(user.created_at)}</td>
 
                                         <td className="actions">
-                                            <Link to={`/admin/usuarios/editar/${user.id}`} style={{textDecoration:"none"}}>
+                                            <Link to={`/admin/usuarios/editar/${user.id}`} style={{ textDecoration: "none" }}>
                                                 <button className="btn-edit">Editar</button>
+                                            </Link>
+
+                                            <Link to={`/admin/usuarios/redefinir-senha/${user.id}`} style={{ textDecoration: "none" }}>
+                                                <button className="btn-password">Senha</button>
                                             </Link>
 
                                             {canDelete && (

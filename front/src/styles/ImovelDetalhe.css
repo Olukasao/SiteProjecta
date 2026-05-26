@@ -167,7 +167,7 @@ body {
 }
 
 /* ================= LEFT COLUMN ================= */
-.left {
+.detalhe-container > .left {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -239,17 +239,57 @@ body {
 }
 
 /* Thumbnails */
+.thumbs-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
 .thumbs {
   display: flex;
   gap: 10px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding: 0 42px 4px;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
+  scroll-behavior: smooth;
+  min-width: 0;
+  width: 100%;
 }
 
 .thumbs::-webkit-scrollbar { height: 4px; }
 .thumbs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.thumbs-arrow {
+  position: absolute;
+  top: calc(50% - 2px);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background var(--transition), color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.thumbs-arrow-left { left: 6px; }
+.thumbs-arrow-right { right: 6px; }
+
+.thumbs-arrow:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  transform: translateY(-50%) scale(1.04);
+  box-shadow: var(--shadow-lg);
+}
 
 .thumbs img {
   width: 82px;
@@ -322,12 +362,12 @@ body {
 .map-placeholder svg { color: var(--accent); opacity: 0.5; }
 
 /* ================= RIGHT COLUMN ================= */
-.right {
+.detalhe-container > .right {
   min-width: 0;
   position: relative;
 }
 
-.right h1 {
+.detalhe-container > .right h1 {
   font-family: 'DM Serif Display', serif;
   font-size: 26px;
   font-weight: 400;
@@ -610,7 +650,7 @@ body {
     margin: 1.25rem auto 4rem;
   }
 
-  .right h1 { font-size: 22px; }
+  .detalhe-container > .right h1 { font-size: 22px; }
 
   .main-image { height: 300px; }
 
@@ -623,6 +663,20 @@ body {
   .sticky-panel { padding: 1.25rem; }
 
   .main-image { height: 240px; }
+
+  .thumbs-arrow {
+    width: 28px;
+    height: 28px;
+  }
+
+  .thumbs {
+    padding: 0 34px 4px;
+  }
+
+  .thumbs img {
+    width: 72px;
+    height: 54px;
+  }
 
   .details { grid-template-columns: 1fr; }
 

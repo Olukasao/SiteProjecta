@@ -20,13 +20,13 @@
 
 /* HERO */
 .hero {
-    height: 720px;
-    min-height: 690px;
+    height: 560px;
+    min-height: 540px;
 
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 138px 20px 76px;
+    padding: 108px 20px 46px;
     position: relative;
     overflow: hidden;
     background: #0f172a;
@@ -80,11 +80,11 @@
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.68));
     border: 1px solid rgba(255, 255, 255, 0.42);
 
-    padding: 36px;
-    border-radius: 30px;
+    padding: 18px;
+    border-radius: 18px;
     text-align: center;
 
-    max-width: 520px;
+    max-width: 360px;
     width: 100%;
 
     box-shadow:
@@ -94,10 +94,10 @@
 
 /* TEXTO */
 .hero-box h1 {
-    font-size: 43px;
-    margin: 0 auto 14px;
-    max-width: 460px;
-    line-height: 1.04;
+    font-size: 29px;
+    margin: 0 auto 8px;
+    max-width: 310px;
+    line-height: 1.06;
     color: #0f172a;
     font-weight: 800;
     letter-spacing: 0;
@@ -105,40 +105,42 @@
 
 .hero-box p {
     color: #405066;
-    margin: 0 auto 26px;
-    max-width: 430px;
-    font-size: 16px;
-    line-height: 1.55;
+    margin: 0 auto 14px;
+    max-width: 300px;
+    font-size: 13px;
+    line-height: 1.44;
 }
 
 /* BUSCA */
 .search {
     display: flex;
     align-items: center;
-    width: 100%;
-    height: 58px;
+    width: min(100%, 300px);
+    height: 44px;
+    margin: 0 auto;
     border: 1px solid rgba(255, 255, 255, 0.74);
-    border-radius: 17px;
+    border-radius: 15px;
     overflow: hidden;
     background: rgba(255, 255, 255, 0.96);
-    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .search input {
     flex: 1;
-    height: 58px;
+    height: 44px;
     min-width: 0;
     margin: 0;
     border: none;
-    padding: 0 20px;
+    padding: 0 12px;
     outline: none;
-    font-size: 15px;
+    font-size: 12px;
     background: transparent;
     color: #0f172a;
 }
 
 .search input::placeholder {
     color: #94a3b8;
+    font-size: 12px;
 }
 
 .search button {
@@ -146,15 +148,16 @@
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    height: 58px;
-    min-width: 114px;
+    height: 44px;
+    min-width: 74px;
     margin: 0;
     background: linear-gradient(180deg, #f8ad1f 0%, var(--accent) 100%);
     border: none;
-    border-radius: 0 16px 16px 0;
-    padding: 0 26px;
+    border-radius: 0 14px 14px 0;
+    padding: 0 14px;
     color: #fff;
     font-weight: 800;
+    font-size: 12.5px;
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;
@@ -166,15 +169,6 @@
     background: linear-gradient(180deg, #f6b32b 0%, var(--accent-dark) 100%);
     transform: translateX(-1px);
     box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.22), 0 0 22px rgba(245, 158, 11, 0.24);
-}
-
-.hero-box .hero-trust {
-    margin: 16px auto 0;
-    max-width: 460px;
-    color: #64748b;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.45;
 }
 
 /* SEÇÕES */
@@ -192,20 +186,12 @@
     margin-bottom: 0;
 }
 
-.filters-section {
-    position: relative;
-    z-index: 2;
-    margin-top: 0;
-    padding: 20px 20px 6px;
-    background: #f8fafc;
-}
-
 .listings-section {
-    padding: 0 20px 58px;
+    padding: 0;
 }
 
 .imoveis-section {
-    padding: 12px 24px 68px;
+    padding: 20px 24px 64px;
     background: #f8fafc;
     scroll-margin-top: 92px;
 }
@@ -214,23 +200,35 @@
     max-width: 1200px;
 }
 
+.imoveis-shell {
+    background: #fff;
+    border: 1px solid rgba(226, 232, 240, 0.92);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 16px 44px rgba(15, 23, 42, 0.07);
+}
+
 .filters-panel {
-    max-width: 1040px;
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.96);
+    max-width: none;
+    margin: 14px 0 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
     border: 1px solid rgba(226, 232, 240, 0.88);
-    border-radius: 20px;
-    padding: 16px;
-    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    border-radius: 16px;
+    padding: 10px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 /* FILTROS */
 .filters {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(128px, 1fr)) auto;
+    align-items: center;
     gap: 10px;
+    flex: 1;
+    min-width: 0;
 
     background: transparent;
     padding: 0;
@@ -241,11 +239,11 @@
 
 .filters input,
 .filters select {
-    height: 44px;
-    padding: 0 15px;
-    border-radius: 12px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 11px;
     border: 1px solid var(--border);
-    font-size: 14px;
+    font-size: 13.5px;
     color: #0f172a;
     background: #fff;
 
@@ -261,59 +259,71 @@
 
 /* DISTRIBUIÇÃO INTELIGENTE */
 .filters input {
-    flex: 2;
+    width: 100%;
     min-width: 180px;
 }
 
 .filters select {
-    flex: 1;
-    min-width: 120px;
+    width: 100%;
+    min-width: 0;
     cursor: pointer;
 }
 
 .filters button {
-    background: #111;
+    background: linear-gradient(180deg, #f8ad1f 0%, #f59e0b 100%);
     border: none;
-    height: 44px;
-    padding: 0 20px;
-    border-radius: 12px;
+    height: 40px;
+    min-width: 96px;
+    padding: 0 16px;
+    border-radius: 11px;
     color: #fff;
-    font-weight: 600;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 800;
+    line-height: 1;
     cursor: pointer;
+    box-shadow: 0 9px 20px rgba(245, 158, 11, 0.22);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+}
+
+.filters button:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(180deg, #f6b32b 0%, #d97706 100%);
+    box-shadow: 0 12px 24px rgba(245, 158, 11, 0.28);
 }
 
 /* GRID */
 .properties-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(292px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
 }
 
 /* CARD */
 .property-card {
     background: #fff;
-    border: 1px solid rgba(226, 232, 240, 0.88);
-    border-radius: 20px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 22px;
     overflow: hidden;
-
+    display: flex;
+    flex-direction: column;
     cursor: pointer;
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-
-    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+    box-shadow: 0 12px 34px rgba(15, 23, 42, 0.075);
 }
 
 .property-card:hover {
-    transform: translateY(-5px);
-    border-color: rgba(245, 158, 11, 0.28);
-    box-shadow: 0 22px 48px rgba(15, 23, 42, 0.14);
+    transform: translateY(-6px);
+    border-color: rgba(245, 158, 11, 0.34);
+    box-shadow: 0 24px 54px rgba(15, 23, 42, 0.14);
 }
 
 /* IMG */
 .property-image {
     position: relative;
     width: 100%;
-    aspect-ratio: 4 / 3;
-    min-height: 220px;
+    height: 238px;
+    min-height: 238px;
     overflow: hidden;
     background: #e2e8f0;
 }
@@ -330,6 +340,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
     display: block;
     transition: transform 0.35s ease;
 }
@@ -348,27 +359,33 @@
     min-height: 30px;
     padding: 0 12px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.92);
-    color: #0f172a;
-    font-size: 12px;
-    font-weight: 700;
+    background: rgba(255, 255, 255, 0.94);
+    color: #92400e;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0;
     box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 /* INFO */
 .property-info {
+    flex: 1;
     padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 11px;
 }
 
 .property-info h3 {
-    min-height: 42px;
-    font-size: 17px;
-    line-height: 1.28;
+    min-height: 44px;
+    font-size: 16.5px;
+    line-height: 1.32;
     margin-bottom: 0;
     color: #0f172a;
+    font-weight: 800;
+    letter-spacing: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -377,16 +394,18 @@
 
 /* PREÇO */
 .price {
-    font-size: 22px;
-    line-height: 1.1;
-    font-weight: 800;
-    color: #0f172a;
+    font-size: 23px;
+    line-height: 1.08;
+    font-weight: 900;
+    color: #b45309;
+    letter-spacing: 0;
 }
 
 /* DETALHES */
 .detail-item span {
     display: block;
-    font-size: 13px;
+    font-size: 12.5px;
+    font-weight: 700;
     color: #475569;
     margin-top: 0;
 }
@@ -398,12 +417,18 @@
     margin-top: 0;
 }
 
+@media (max-width: 1100px) {
+    .properties-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 /* 🔥 TABLET */
 @media (max-width: 900px) {
     .hero {
         height: auto;
-        min-height: 620px;
-        padding: 116px 20px 58px;
+        min-height: 520px;
+        padding: 100px 20px 38px;
     }
 
     .hero-slide img {
@@ -411,33 +436,58 @@
     }
 
     .hero-box {
-        padding: 30px;
-        max-width: 500px;
+        padding: 18px;
+        max-width: 350px;
     }
 
     .section {
         padding: 32px 20px;
     }
 
-    .filters-section {
-        margin-top: 0;
-        padding: 18px 20px 6px;
-    }
-
     .listings-section {
-        padding: 0 20px 44px;
+        padding: 0;
     }
 
     .imoveis-section {
-        padding: 10px 20px 56px;
+        padding: 16px 20px 52px;
+    }
+
+    .imoveis-shell {
+        padding: 20px;
+        border-radius: 22px;
     }
 
     .hero-box h1 {
-        font-size: 36px;
+        font-size: 28px;
     }
 
     .properties-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 20px;
+    }
+
+    .property-image {
+        height: 250px;
+        min-height: 250px;
+    }
+}
+
+@media (max-width: 760px) {
+    .filters-panel {
+        display: block;
+        padding: 12px;
+    }
+
+    .filters-header {
+        margin-bottom: 8px;
+    }
+
+    .filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .filters-search-btn {
+        grid-column: 1 / -1;
     }
 }
 
@@ -446,8 +496,8 @@
 
     /* HERO */
     .hero {
-        min-height: 620px;
-        padding: 96px 15px 44px;
+        min-height: 500px;
+        padding: 88px 15px 34px;
     }
 
     .hero-slide img {
@@ -458,79 +508,77 @@
         padding: 28px 20px;
     }
 
-    .filters-section {
-        margin-top: 0;
-        padding: 16px 15px 6px;
-    }
-
     .listings-section {
-        padding: 0 15px 36px;
+        padding: 0;
     }
 
     .imoveis-section {
-        padding: 10px 15px 44px;
+        padding: 14px 15px 42px;
+    }
+
+    .imoveis-shell {
+        padding: 14px;
+        border-radius: 20px;
     }
 
     .hero-box {
-        width: min(100%, 430px);
-        padding: 24px 18px;
-        border-radius: 26px;
+        width: min(100%, 310px);
+        padding: 16px 12px;
+        border-radius: 16px;
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.72));
     }
 
     .hero-box h1 {
-        font-size: 30px;
+        font-size: 23px;
         line-height: 1.08;
     }
 
     .hero-box p {
-        font-size: 14px;
-        margin-bottom: 20px;
+        font-size: 12px;
+        margin-bottom: 12px;
     }
 
     /* BUSCA STACK */
     .search {
         flex-direction: column;
         height: auto;
-        gap: 10px;
-        padding: 10px;
-        border-radius: 18px;
+        gap: 8px;
+        padding: 8px;
+        border-radius: 16px;
         overflow: visible;
         background: rgba(255, 255, 255, 0.96);
     }
 
     .search input {
         width: 100%;
-        height: 50px;
-        padding: 0 14px;
-        border-radius: 13px;
-        font-size: 13px;
+        height: 42px;
+        padding: 0 11px;
+        border-radius: 12px;
+        font-size: 12px;
         background: #fff;
     }
 
     .search button {
         width: 100%;
-        height: 50px;
+        height: 42px;
         min-width: 0;
-        padding: 0 14px;
-        border-radius: 13px;
-    }
-
-    .hero-box .hero-trust {
-        margin-top: 14px;
-        font-size: 12px;
+        padding: 0 13px;
+        border-radius: 12px;
     }
 
     /* FILTROS STACK */
     .filters-panel {
-        padding: 14px;
-        border-radius: 18px;
+        margin: 12px 0 16px;
+        padding: 10px;
+        border-radius: 16px;
+        display: block;
     }
 
     .filters-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 10px;
+        gap: 8px;
+        margin-bottom: 8px;
     }
 
     .btn-limpar {
@@ -538,8 +586,8 @@
     }
 
     .filters {
-        flex-direction: column;
-        gap: 10px;
+        grid-template-columns: 1fr;
+        gap: 7px;
         padding: 0;
     }
 
@@ -547,6 +595,7 @@
     .filters select,
     .filters button {
         width: 100%;
+        height: 40px;
     }
 
     /* GRID 1 COLUNA */
@@ -557,16 +606,27 @@
 
     /* CARD */
     .property-image {
-        min-height: 190px;
+        height: 220px;
+        min-height: 220px;
     }
 
     .results-header {
-        align-items: flex-start;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
         margin-bottom: 14px;
+    }
+
+    .results-title {
+        align-items: center;
     }
 
     .results-header h2 {
         font-size: 24px;
+    }
+
+    .results-title p {
+        font-size: 13px;
     }
 }
 
@@ -589,26 +649,36 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 10px;
+  flex: 0 0 auto;
+  margin-bottom: 0;
+  min-width: 0;
+}
+
+.filters-label {
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .filters-title {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .filters-header h2 {
-  font-size: 21px;
+  font-size: 16.5px;
   color: #0f172a;
   line-height: 1.2;
 }
 
 .filters-title p {
-  font-size: 13.5px;
+  font-size: 12px;
   color: var(--muted);
-  line-height: 1.45;
+  line-height: 1.35;
 }
 
 .btn-limpar {
@@ -616,9 +686,9 @@
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 999px;
-  padding: 7px 13px;
+  padding: 5px 9px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: #666;
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
@@ -633,28 +703,45 @@
 /* Contador de resultados */
 .results-header {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 16px;
+  padding: 0 2px;
+}
+
+.results-title {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .results-header h2 {
   font-size: 27px;
   color: #0f172a;
-  line-height: 1.2;
+  line-height: 1.12;
+  letter-spacing: 0;
+}
+
+.results-title p {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .results-count {
-  font-size: 14px;
-  font-weight: 500;
-  color: #64748b;
-  background: #fff;
-  border: 1px solid #eef0f3;
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid rgba(245, 158, 11, 0.24);
   border-radius: 999px;
-  padding: 7px 13px;
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+  padding: 0 12px;
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.08);
 }
 
 /* Estado vazio */
@@ -677,21 +764,21 @@
 .property-details {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 7px;
     margin-top: 0;
 }
 
 .detail-item {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
 
-    font-size: 13px;
-    color: #555;
+    font-size: 12.5px;
+    color: #475569;
 
-    background: #f8fafc;
-    border: 1px solid #edf1f6;
-    padding: 6px 10px;
+    background: #fff7ed;
+    border: 1px solid rgba(245, 158, 11, 0.18);
+    padding: 6px 9px;
     border-radius: 999px;
 }
 
@@ -707,8 +794,9 @@
     gap: 6px;
 
     font-size: 13px;
-    color: #777;
+    color: #64748b;
     margin-top: 0;
+    line-height: 1.4;
 }
 
 .location svg {
@@ -723,7 +811,7 @@
     gap: 6px;
     width: 100%;
     height: 46px;
-    margin-top: 4px;
+    margin-top: auto;
     border: none;
     border-radius: 14px;
     background: linear-gradient(180deg, #f8ad1f 0%, #f59e0b 100%);
@@ -747,11 +835,18 @@
     flex-shrink: 0;
 }
 
+@media (max-width: 760px) {
+    .filters-header {
+        margin-bottom: 8px;
+    }
+}
+
 @media (max-width: 600px) {
     .filters-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 10px;
+        gap: 8px;
+        margin-bottom: 8px;
     }
 
     .btn-limpar {
@@ -759,11 +854,22 @@
     }
 
     .results-header {
-        align-items: flex-start;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
         margin-bottom: 14px;
+    }
+
+    .results-title {
+        align-items: center;
     }
 
     .results-header h2 {
         font-size: 24px;
+    }
+
+    .results-title p {
+        font-size: 13px;
     }
 }
