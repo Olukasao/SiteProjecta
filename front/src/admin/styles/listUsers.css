@@ -101,6 +101,11 @@ tr:hover {
     color: #1d4ed8;
 }
 
+.role.dev {
+    background: #111827;
+    color: #f9fafb;
+}
+
 .role.editor {
     background: #ede9fe;
     color: #6d28d9;

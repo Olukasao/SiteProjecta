@@ -4,6 +4,21 @@ import { api } from "../services/api";
 import "./styles/listUsers.css";
 import { Link, useNavigate } from "react-router-dom";
 import { KeyRound } from "lucide-react";
+import {
+    canChangeUser as canChangeUserPermission,
+    canDeleteUser as canDeleteUserPermission,
+    canManageUsers as canManageUsersPermission,
+} from "./utils/permissions";
+
+type ApiError = {
+    response?: {
+        data?: {
+            message?: string;
+        };
+    };
+};
+
+type UserRole = "dev" | "admin" | "editor";
 
 type User = {
     id: number;
@@ -11,7 +26,7 @@ type User = {
     username?: string;
     email: string;
     telefone: string;
-    role: "admin" | "editor";
+    role: UserRole;
     status: "active" | "inactive" | "banned";
     phone?: string;
     created_at: string;
@@ -26,8 +41,7 @@ export default function ListUsers() {
     const navigate = useNavigate();
 
     const currentUser = JSON.parse(localStorage.getItem("user") || "null");
-    const canManageUsers = currentUser?.role === "admin";
-
+    const canManageUsers = canManageUsersPermission(currentUser);
 
     function formatDate(date: string) {
         return new Date(date).toLocaleDateString("pt-BR");
@@ -54,6 +68,7 @@ export default function ListUsers() {
             setUsers((prev) => prev.filter((u) => u.id !== id));
         } catch (error) {
             console.error("Erro ao deletar usuário:", error);
+            alert((error as ApiError).response?.data?.message || "Erro ao deletar usuário");
         } finally {
             setDeletingId(null);
         }
@@ -89,9 +104,11 @@ export default function ListUsers() {
             <div className="title-list">
                 <h2>Usuários</h2>
 
-                <button className="btn-primary" onClick={() => navigate("/admin/usuarios/cadastrar")}>
-                    + Cadastrar
-                </button>
+                {canManageUsers && (
+                    <button className="btn-primary" onClick={() => navigate("/admin/usuarios/cadastrar")}>
+                        + Cadastrar
+                    </button>
+                )}
             </div>
 
             <div className="d">
@@ -122,59 +139,68 @@ export default function ListUsers() {
 
                         <tbody>
                             {filteredUsers.length > 0 ? (
-                                filteredUsers.map((user) => (
-                                    <tr key={user.id}>
-                                        <td>
-                                            <strong>{user.nome}</strong>
-                                            <br />
-                                            <span className="sub">
-                                                {user.username || "-"}
-                                            </span>
-                                        </td>
+                                filteredUsers.map((user) => {
+                                    const canChange = canChangeUserPermission(currentUser, user);
+                                    const canDelete = canDeleteUserPermission(currentUser, user);
 
-                                        <td>{user.email}</td>
+                                    return (
+                                        <tr key={user.id}>
+                                            <td>
+                                                <strong>{user.nome}</strong>
+                                                <br />
+                                                <span className="sub">
+                                                    {user.username || "-"}
+                                                </span>
+                                            </td>
 
-                                        <td>{user.phone || "-"}</td>
-                                        <td>
-                                            <span className={`role ${user.role}`}>
-                                                {user.role}
-                                            </span>
-                                        </td>
+                                            <td>{user.email}</td>
 
-                                        <td>
-                                            <span className={`status ${user.status}`}>
-                                                {user.status}
-                                            </span>
-                                        </td>
+                                            <td>{user.phone || "-"}</td>
+                                            <td>
+                                                <span className={`role ${user.role}`}>
+                                                    {user.role}
+                                                </span>
+                                            </td>
 
-                                        <td>{formatDate(user.created_at)}</td>
+                                            <td>
+                                                <span className={`status ${user.status}`}>
+                                                    {user.status}
+                                                </span>
+                                            </td>
 
-                                        <td className="actions">
-                                            <Link to={`/admin/usuarios/editar/${user.id}`} style={{ textDecoration: "none" }}>
-                                                <button className="btn-edit">Editar</button>
-                                            </Link>
+                                            <td>{formatDate(user.created_at)}</td>
 
-                                            {canManageUsers && (
-                                                <Link to={`/admin/usuarios/redefinir-senha/${user.id}`} style={{ textDecoration: "none" }}>
-                                                    <button className="btn-password" type="button">
-                                                        <KeyRound size={14} />
-                                                        Alterar senha
-                                                    </button>
-                                                </Link>
-                                            )}
+                                            <td className="actions">
+                                                {canChange ? (
+                                                    <>
+                                                        <Link to={`/admin/usuarios/editar/${user.id}`} style={{ textDecoration: "none" }}>
+                                                            <button className="btn-edit">Editar</button>
+                                                        </Link>
 
-                                            {canManageUsers && (
-                                                <button
-                                                    className="btn-delete"
-                                                    disabled={deletingId === user.id}
-                                                    onClick={() => handleDelete(user.id)}
-                                                >
-                                                    {deletingId === user.id ? "..." : "Excluir"}
-                                                </button>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))
+                                                        <Link to={`/admin/usuarios/redefinir-senha/${user.id}`} style={{ textDecoration: "none" }}>
+                                                            <button className="btn-password" type="button">
+                                                                <KeyRound size={14} />
+                                                                Alterar senha
+                                                            </button>
+                                                        </Link>
+
+                                                        {canDelete && (
+                                                            <button
+                                                                className="btn-delete"
+                                                                disabled={deletingId === user.id}
+                                                                onClick={() => handleDelete(user.id)}
+                                                            >
+                                                                {deletingId === user.id ? "..." : "Excluir"}
+                                                            </button>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <span className="sub">Protegido</span>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    );
+                                })
                             ) : (
                                 <tr>
                                     <td colSpan={7} className="empty">

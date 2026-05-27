@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../services/api";
+import { getPasswordError } from "./utils/password";
+import { canChangeUser, isAdminLike } from "./utils/permissions";
 import "./styles/cadUser.css";
+
+type UserRole = "dev" | "admin" | "editor";
 
 type UserDetails = {
     nome: string;
     email: string;
     username?: string;
+    role: UserRole;
 };
 
 type Errors = {
@@ -47,8 +52,9 @@ export default function ResetUserPassword() {
 
         if (!senha) {
             newErrors.senha = "Senha é obrigatória";
-        } else if (senha.length < 8) {
-            newErrors.senha = "A senha deve ter no mínimo 8 caracteres";
+        } else {
+            const passwordError = getPasswordError(senha);
+            if (passwordError) newErrors.senha = passwordError;
         }
 
         if (!confirmSenha) {
@@ -91,7 +97,7 @@ export default function ResetUserPassword() {
         getUser();
     }, [id]);
 
-    if (currentUser?.role !== "admin") {
+    if (!isAdminLike(currentUser)) {
         return (
             <div className="cad-container">
                 <div className="cad-error">Acesso restrito a administradores.</div>
@@ -103,6 +109,17 @@ export default function ResetUserPassword() {
     }
 
     if (loading) return <p>Carregando...</p>;
+
+    if (user && !canChangeUser(currentUser, user)) {
+        return (
+            <div className="cad-container">
+                <div className="cad-error">Somente dev pode alterar contas de administradores ou devs.</div>
+                <button type="button" className="btn-secondary" onClick={() => navigate("/admin/usuarios")}>
+                    Voltar
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="cad-container">

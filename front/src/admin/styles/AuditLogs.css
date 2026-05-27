@@ -137,6 +137,11 @@
     color: #991b1b;
 }
 
+.audit-action.restore {
+    background: #dcfce7;
+    color: #166534;
+}
+
 .audit-info {
     min-width: 0;
 }
@@ -178,6 +183,11 @@
 .audit-badge.delete {
     background: #fee2e2;
     color: #991b1b;
+}
+
+.audit-badge.restore {
+    background: #dcfce7;
+    color: #166534;
 }
 
 .audit-changes {

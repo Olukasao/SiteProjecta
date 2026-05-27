@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import "./styles/ListProperty.css";
+import { canDeleteProperties as canDeletePropertiesPermission } from "./utils/permissions";
 
 import { Bed, Bath, Car, Ruler, MapPin, Pencil, Trash2 } from "lucide-react";
 
@@ -12,6 +13,8 @@ export default function ListProperty() {
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
+  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+  const canDeleteProperties = canDeletePropertiesPermission(currentUser);
 
   async function carregarImoveis() {
     try {
@@ -57,7 +60,18 @@ export default function ListProperty() {
 
   return (
     <div className="container-list">
-      <h1>Imóveis</h1>
+      <div className="list-header">
+        <div>
+          <h1>Imóveis</h1>
+        </div>
+
+        {canDeleteProperties && (
+          <button className="toolbar-button" type="button" onClick={() => navigate("/admin/imoveis/lixeira")}>
+            <Trash2 size={16} />
+            Lixeira
+          </button>
+        )}
+      </div>
 
       {/* FILTROS */}
       <div className="filtros">
@@ -113,7 +127,7 @@ export default function ListProperty() {
                   <span><Ruler size={14} /> {imovel.area} m²</span>
                 </div>
 
-                {/* AÇÕES (ADMIN) */}
+                {/* AÇÕES */}
                 <div className="actions">
 
                   <button
@@ -126,15 +140,17 @@ export default function ListProperty() {
                     <Pencil size={14} /> Editar
                   </button>
 
-                  <button
-                    className="delete"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(imovel.id);
-                    }}
-                  >
-                    <Trash2 size={14} /> Excluir
-                  </button>
+                  {canDeleteProperties && (
+                    <button
+                      className="delete"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(imovel.id);
+                      }}
+                    >
+                      <Trash2 size={14} /> Excluir
+                    </button>
+                  )}
 
                 </div>
 

@@ -14,3 +14,24 @@ api.interceptors.request.use((config) => {
 
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const url = String(error.config?.url || "");
+    const isLoginRequest = url.includes("/login");
+
+    if (status === 401 && !isLoginRequest) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.setItem("sessionMessage", "Sua sessão expirou. Entre novamente.");
+
+      if (window.location.pathname.startsWith("/admin") && window.location.pathname !== "/admin/login") {
+        window.location.href = "/admin/login";
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);

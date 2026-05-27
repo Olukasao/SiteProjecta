@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { api } from "../services/api";
+import { getPasswordError } from "./utils/password";
+import { isDev } from "./utils/permissions";
 import "./styles/cadUser.css";
+
+type UserRole = "dev" | "admin" | "editor";
 
 type UserCreate = {
     nome: string;
@@ -9,7 +13,7 @@ type UserCreate = {
     username: string;
     senha: string;
     confirmSenha: string;
-    role: "admin" | "editor";
+    role: UserRole;
 };
 
 type Errors = {
@@ -22,6 +26,8 @@ type Errors = {
 };
 
 export default function CadUser() {
+    const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+    const currentUserIsDev = isDev(currentUser);
     const [form, setForm] = useState<UserCreate>({
         nome: "",
         email: "",
@@ -60,7 +66,12 @@ export default function CadUser() {
         if (!form.email) newErrors.email = "Email é obrigatório";
         if (!form.username) newErrors.username = "Username é obrigatório";
         if (!form.telefone) newErrors.telefone = "Telefone é obrigatório";
-        if (!form.senha) newErrors.senha = "Senha é obrigatória";
+        if (!form.senha) {
+            newErrors.senha = "Senha é obrigatória";
+        } else {
+            const passwordError = getPasswordError(form.senha);
+            if (passwordError) newErrors.senha = passwordError;
+        }
 
         if (form.senha !== form.confirmSenha) {
             newErrors.confirmSenha = "Senhas não conferem";
@@ -145,14 +156,16 @@ export default function CadUser() {
                     </div>
                 </div>
 
-                {/* ROLE */}
-                <div className="cad-field">
-                    <label>Tipo de usuário</label>
-                    <select name="role" value={form.role} onChange={handleChange}>
-                        <option value="admin">Admin</option>
-                        <option value="editor">Editor</option>
-                    </select>
-                </div>
+                {currentUserIsDev && (
+                    <div className="cad-field">
+                        <label>Tipo de usuário</label>
+                        <select name="role" value={form.role} onChange={handleChange}>
+                            <option value="editor">Editor</option>
+                            <option value="admin">Admin</option>
+                            <option value="dev">Dev</option>
+                        </select>
+                    </div>
+                )}
 
                 {/* SENHAS */}
                 <div className="cad-row">

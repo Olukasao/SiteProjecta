@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../services/api";
 import "./styles/loginAdmin.css";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,14 @@ export default function LoginAdmin() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const sessionMessage = localStorage.getItem("sessionMessage");
+    if (!sessionMessage) return;
+
+    setErro(sessionMessage);
+    localStorage.removeItem("sessionMessage");
+  }, []);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -24,7 +32,7 @@ export default function LoginAdmin() {
       setLoading(true);
 
       const { data } = await api.post("/login", {
-        email,
+        email: email.trim().toLowerCase(),
         senha,
       });
 

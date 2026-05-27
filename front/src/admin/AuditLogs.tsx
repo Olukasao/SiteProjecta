@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { History, Pencil, Plus, RefreshCw, ShieldCheck, Trash2 } from "lucide-react";
+import { History, Pencil, Plus, RefreshCw, RotateCcw, ShieldCheck, Trash2 } from "lucide-react";
 import { api } from "../services/api";
+import { isAdminLike } from "./utils/permissions";
 import "./styles/AuditLogs.css";
 
-type AuditAction = "" | "create" | "update" | "delete";
+type AuditAction = "" | "create" | "update" | "delete" | "restore";
 
 type AuditChange = {
     campo: string;
@@ -16,7 +17,7 @@ type AuditLog = {
     actor_nome?: string | null;
     actor_email?: string | null;
     actor_role?: string | null;
-    action: "create" | "update" | "delete";
+    action: "create" | "update" | "delete" | "restore";
     resource_type: string;
     resource_id?: number | null;
     resource_title?: string | null;
@@ -46,6 +47,11 @@ const actionMeta = {
         className: "delete",
         icon: Trash2,
     },
+    restore: {
+        label: "Restauracao",
+        className: "restore",
+        icon: RotateCcw,
+    },
 };
 
 function formatDate(value: string) {
@@ -71,6 +77,7 @@ function getSummary(log: AuditLog) {
 
     if (log.action === "create") return `${resource} cadastrado`;
     if (log.action === "delete") return `${resource} removido`;
+    if (log.action === "restore") return `${resource} restaurado`;
 
     const count = log.details?.changes?.length || 0;
     return count === 1 ? "1 campo alterado" : `${count} campos alterados`;
@@ -123,13 +130,13 @@ export default function AuditLogs() {
         loadLogs("");
     }, []);
 
-    if (currentUser?.role && currentUser.role !== "admin") {
+    if (currentUser?.role && !isAdminLike(currentUser)) {
         return (
             <div className="audit-page">
                 <div className="audit-empty">
                     <ShieldCheck size={28} />
                     <h2>Acesso restrito</h2>
-                    <p>Somente usuarios com cargo de admin podem ver a auditoria.</p>
+                    <p>Somente usuarios com cargo de admin ou dev podem ver a auditoria.</p>
                 </div>
             </div>
         );
@@ -158,6 +165,7 @@ export default function AuditLogs() {
                     <option value="create">Cadastros</option>
                     <option value="update">Edicoes</option>
                     <option value="delete">Exclusoes</option>
+                    <option value="restore">Restauracoes</option>
                 </select>
 
                 <span>{logs.length} registros</span>

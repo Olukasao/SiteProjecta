@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../services/api";
+import { canChangeUser, isDev } from "./utils/permissions";
 import "./styles/cadUser.css";
+
+type UserRole = "dev" | "admin" | "editor";
 
 type UserForm = {
     nome: string;
     email: string;
     username: string;
-    role: "admin" | "editor";
-    ativo: boolean;
+    role: UserRole;
+    status: "active" | "inactive" | "banned";
 };
 
 type Errors = {
@@ -17,16 +20,22 @@ type Errors = {
     username?: string;
 };
 
+type UserDetails = UserForm & {
+    role: UserRole;
+};
+
 export default function EditUser() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+    const currentUserIsDev = isDev(currentUser);
 
     const [form, setForm] = useState<UserForm>({
         nome: "",
         email: "",
         username: "",
         role: "editor",
-        ativo: true,
+        status: "active",
     });
 
     const [errors, setErrors] = useState<Errors>({});
@@ -34,6 +43,7 @@ export default function EditUser() {
     const [success, setSuccess] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [protectedAdmin, setProtectedAdmin] = useState(false);
 
     // 🔍 buscar usuário
     async function getUser() {
@@ -42,14 +52,21 @@ export default function EditUser() {
         try {
             setLoading(true);
 
-            const { data } = await api.get(`/usuario/${id}`);
+            const { data } = await api.get<UserDetails>(`/usuario/${id}`);
+
+            if (!canChangeUser(currentUser, data)) {
+                setProtectedAdmin(true);
+                return;
+            }
+
+            setProtectedAdmin(false);
 
             setForm({
                 nome: data.nome || "",
                 email: data.email || "",
                 username: data.username || "",
                 role: data.role || "editor",
-                ativo: data.ativo ?? true,
+                status: data.status || "active",
             });
 
         } catch {
@@ -66,7 +83,7 @@ export default function EditUser() {
 
         setForm((prev) => ({
             ...prev,
-            [name]: name === "ativo" ? value === "true" : value,
+            [name]: value,
         }));
 
         setErrors((prev) => ({
@@ -131,73 +148,80 @@ export default function EditUser() {
             {error && <div className="cad-error">{error}</div>}
             {success && <div className="cad-success">{success}</div>}
 
-            <form onSubmit={handleSubmit} className="cad-form">
+            {protectedAdmin ? (
+                <>
+                    <div className="cad-error">Somente dev pode alterar contas de administradores ou devs.</div>
+                    <button type="button" className="btn-secondary" onClick={() => navigate("/admin/usuarios")}>
+                        Voltar
+                    </button>
+                </>
+            ) : (
+                <form onSubmit={handleSubmit} className="cad-form">
 
-                {/* LINHA 1 */}
-                <div className="cad-row">
+                    {/* LINHA 1 */}
+                    <div className="cad-row">
+                        <div className="cad-field">
+                            <label>Nome</label>
+                            <input
+                                name="nome"
+                                value={form.nome}
+                                onChange={handleChange}
+                            />
+                            {errors.nome && <span>{errors.nome}</span>}
+                        </div>
+
+                        <div className="cad-field">
+                            <label>Username</label>
+                            <input
+                                name="username"
+                                value={form.username}
+                                onChange={handleChange}
+                            />
+                            {errors.username && <span>{errors.username}</span>}
+                        </div>
+                    </div>
+
+                    {/* EMAIL */}
                     <div className="cad-field">
-                        <label>Nome</label>
+                        <label>Email</label>
                         <input
-                            name="nome"
-                            value={form.nome}
+                            name="email"
+                            value={form.email}
                             onChange={handleChange}
                         />
-                        {errors.nome && <span>{errors.nome}</span>}
+                        {errors.email && <span>{errors.email}</span>}
                     </div>
 
-                    <div className="cad-field">
-                        <label>Username</label>
-                        <input
-                            name="username"
-                            value={form.username}
-                            onChange={handleChange}
-                        />
-                        {errors.username && <span>{errors.username}</span>}
-                    </div>
-                </div>
+                    {/* LINHA 2 */}
+                    <div className="cad-row">
+                        <div className="cad-field">
+                            <label>Role</label>
+                            <select name="role" value={form.role} onChange={handleChange} disabled={!currentUserIsDev}>
+                                {currentUserIsDev && <option value="dev">Dev</option>}
+                                {currentUserIsDev && <option value="admin">Admin</option>}
+                                <option value="editor">Editor</option>
+                            </select>
+                        </div>
 
-                {/* EMAIL */}
-                <div className="cad-field">
-                    <label>Email</label>
-                    <input
-                        name="email"
-                        value={form.email}
-                        onChange={handleChange}
-                    />
-                    {errors.email && <span>{errors.email}</span>}
-                </div>
-
-                {/* LINHA 2 */}
-                <div className="cad-row">
-                    <div className="cad-field">
-                        <label>Role</label>
-                        <select
-                            name="role"
-                            value={form.role}
-                            onChange={handleChange}
-                        >
-                            <option value="admin">Admin</option>
-                            <option value="editor">Editor</option>
-                        </select>
+                        <div className="cad-field">
+                            <label>Status</label>
+                            <select
+                                name="status"
+                                value={form.status}
+                                onChange={handleChange}
+                            >
+                                <option value="active">Ativo</option>
+                                <option value="inactive">Inativo</option>
+                                <option value="banned">Bloqueado</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div className="cad-field">
-                        <label>Status</label>
-                        <select
-                            name="ativo"
-                            value={String(form.ativo)}
-                            onChange={handleChange}
-                        >
-                            <option value="true">Ativo</option>
-                            <option value="false">Inativo</option>
-                        </select>
-                    </div>
-                </div>
-
-                <button type="submit" disabled={saving}>
-                    {saving ? "Salvando..." : "Salvar alterações"}
-                </button>
-            </form>
+                    <button type="submit" disabled={saving}>
+                        {saving ? "Salvando..." : "Salvar alterações"}
+                    </button>
+                </form>
+            )}
         </div>
     );
 }
