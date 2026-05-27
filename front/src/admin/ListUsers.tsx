@@ -12,8 +12,10 @@ import {
 
 type ApiError = {
     response?: {
+        status?: number;
         data?: {
             message?: string;
+            error?: string;
         };
     };
 };
@@ -68,7 +70,15 @@ export default function ListUsers() {
             setUsers((prev) => prev.filter((u) => u.id !== id));
         } catch (error) {
             console.error("Erro ao deletar usuário:", error);
-            alert((error as ApiError).response?.data?.message || "Erro ao deletar usuário");
+            const apiError = error as ApiError;
+            const message =
+                apiError.response?.data?.message ||
+                apiError.response?.data?.error ||
+                (apiError.response?.status === 404
+                    ? "Rota de exclusão não encontrada na API. Publique a API atualizada."
+                    : "Erro ao deletar usuário");
+
+            alert(message);
         } finally {
             setDeletingId(null);
         }
