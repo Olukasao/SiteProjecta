@@ -8,6 +8,7 @@ import {
     canChangeUser as canChangeUserPermission,
     canDeleteUser as canDeleteUserPermission,
     canManageUsers as canManageUsersPermission,
+    canResetUserPassword as canResetUserPasswordPermission,
 } from "./utils/permissions";
 
 type ApiError = {
@@ -39,6 +40,7 @@ export default function ListUsers() {
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [deleteNotice, setDeleteNotice] = useState("");
 
     const navigate = useNavigate();
 
@@ -84,9 +86,15 @@ export default function ListUsers() {
         }
     }
 
-    function handleDelete(id: number) {
+    function handleDelete(user: User) {
+        if (!canDeleteUserPermission(currentUser, user)) {
+            setDeleteNotice("Somente um dev pode excluir usuários. Entre em contato com um dev para realizar essa exclusão.");
+            return;
+        }
+
+        setDeleteNotice("");
         if (!window.confirm("Tem certeza que deseja deletar este usuário?")) return;
-        deleteUser(id);
+        deleteUser(user.id);
     }
 
     function handleSearch(e: ChangeEvent<HTMLInputElement>) {
@@ -130,6 +138,8 @@ export default function ListUsers() {
                 />
             </div>
 
+            {deleteNotice && <div className="list-notice">{deleteNotice}</div>}
+
             {loading ? (
                 <p className="loading">Carregando...</p>
             ) : (
@@ -151,7 +161,10 @@ export default function ListUsers() {
                             {filteredUsers.length > 0 ? (
                                 filteredUsers.map((user) => {
                                     const canChange = canChangeUserPermission(currentUser, user);
+                                    const canResetPassword = canResetUserPasswordPermission(currentUser, user);
                                     const canDelete = canDeleteUserPermission(currentUser, user);
+                                    const canRequestDelete = canManageUsers && Number(currentUser?.id) !== Number(user.id);
+                                    const hasActions = canChange || canResetPassword || canRequestDelete;
 
                                     return (
                                         <tr key={user.id}>
@@ -181,26 +194,30 @@ export default function ListUsers() {
                                             <td>{formatDate(user.created_at)}</td>
 
                                             <td className="actions">
-                                                {canChange ? (
+                                                {hasActions ? (
                                                     <>
-                                                        <Link to={`/admin/usuarios/editar/${user.id}`} style={{ textDecoration: "none" }}>
-                                                            <button className="btn-edit">Editar</button>
-                                                        </Link>
+                                                        {canChange && (
+                                                            <Link to={`/admin/usuarios/editar/${user.id}`} style={{ textDecoration: "none" }}>
+                                                                <button className="btn-edit">Editar</button>
+                                                            </Link>
+                                                        )}
 
-                                                        <Link to={`/admin/usuarios/redefinir-senha/${user.id}`} style={{ textDecoration: "none" }}>
-                                                            <button className="btn-password" type="button">
-                                                                <KeyRound size={14} />
-                                                                Alterar senha
-                                                            </button>
-                                                        </Link>
+                                                        {canResetPassword && (
+                                                            <Link to={`/admin/usuarios/redefinir-senha/${user.id}`} style={{ textDecoration: "none" }}>
+                                                                <button className="btn-password" type="button">
+                                                                    <KeyRound size={14} />
+                                                                    Alterar senha
+                                                                </button>
+                                                            </Link>
+                                                        )}
 
-                                                        {canDelete && (
+                                                        {canRequestDelete && (
                                                             <button
                                                                 className="btn-delete"
-                                                                disabled={deletingId === user.id}
-                                                                onClick={() => handleDelete(user.id)}
+                                                                disabled={canDelete && deletingId === user.id}
+                                                                onClick={() => handleDelete(user)}
                                                             >
-                                                                {deletingId === user.id ? "..." : "Excluir"}
+                                                                {canDelete && deletingId === user.id ? "..." : "Excluir"}
                                                             </button>
                                                         )}
                                                     </>

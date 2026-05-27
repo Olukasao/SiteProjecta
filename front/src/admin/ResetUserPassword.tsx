@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../services/api";
 import { getPasswordError } from "./utils/password";
-import { canChangeUser, isAdminLike } from "./utils/permissions";
+import { canResetUserPassword, isAdminLike } from "./utils/permissions";
 import "./styles/cadUser.css";
 
 type UserRole = "dev" | "admin" | "editor";
 
 type UserDetails = {
+    id: number;
     nome: string;
     email: string;
     username?: string;
@@ -110,10 +111,15 @@ export default function ResetUserPassword() {
 
     if (loading) return <p>Carregando...</p>;
 
-    if (user && !canChangeUser(currentUser, user)) {
+    if (user && !canResetUserPassword(currentUser, user)) {
+        const message =
+            Number(currentUser?.id) === Number(user.id)
+                ? "Use a tela Minha senha para alterar sua própria senha."
+                : "Somente dev pode redefinir senha de usuários dev.";
+
         return (
             <div className="cad-container">
-                <div className="cad-error">Somente dev pode alterar contas de administradores ou devs.</div>
+                <div className="cad-error">{message}</div>
                 <button type="button" className="btn-secondary" onClick={() => navigate("/admin/usuarios")}>
                     Voltar
                 </button>

@@ -27,6 +27,14 @@ export function canChangeUser(currentUser: AdminUser, targetUser: AdminUser) {
   return targetUser?.role === "editor";
 }
 
+export function canResetUserPassword(currentUser: AdminUser, targetUser: AdminUser) {
+  if (!canManageUsers(currentUser)) return false;
+  if (Number(currentUser?.id) === Number(targetUser?.id)) return false;
+  if (isDev(currentUser)) return true;
+
+  return targetUser?.role === "admin" || targetUser?.role === "editor";
+}
+
 export function canDeleteUser(currentUser: AdminUser, targetUser: AdminUser) {
-  return canChangeUser(currentUser, targetUser) && currentUser?.id !== targetUser?.id;
+  return isDev(currentUser) && Number(currentUser?.id) !== Number(targetUser?.id);
 }
