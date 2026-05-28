@@ -33,6 +33,7 @@ type User = {
     status: "active" | "inactive" | "banned";
     phone?: string;
     created_at: string;
+    deleted_at?: string | null;
 };
 
 export default function ListUsers() {
@@ -56,7 +57,7 @@ export default function ListUsers() {
         try {
             setLoading(true);
             const { data } = await api.get<User[]>("/usuarios");
-            setUsers(data);
+            setUsers((data || []).filter((user) => !isDeletedUser(user)));
         } catch (error) {
             console.error("Erro ao buscar usuários:", error);
         } finally {
@@ -64,21 +65,58 @@ export default function ListUsers() {
         }
     }
 
+    function isDeletedUser(user: User) {
+        return Boolean(
+            user.deleted_at ||
+            user.email?.startsWith("deleted_") ||
+            user.username?.startsWith("deleted_")
+        );
+    }
+
+    async function softDeleteWithLegacyApi(user: User) {
+        const deletedStamp = `${user.id}_${Date.now()}`;
+
+        await api.put(`/usuario/update/${user.id}`, {
+            nome: user.nome,
+            email: `deleted_${deletedStamp}@deleted.local`,
+            username: `deleted_${deletedStamp}`,
+            role: user.role,
+            status: "inactive",
+            phone: user.phone || user.telefone || null,
+        });
+    }
+
     // 🗑 deletar
-    async function deleteUser(id: number) {
+    async function deleteUser(user: User) {
         try {
-            setDeletingId(id);
-            await api.delete(`/usuarios/${id}`);
-            setUsers((prev) => prev.filter((u) => u.id !== id));
+            setDeletingId(user.id);
+            await api.delete(`/usuarios/${user.id}`);
+            setUsers((prev) => prev.filter((u) => u.id !== user.id));
         } catch (error) {
             console.error("Erro ao deletar usuário:", error);
             const apiError = error as ApiError;
+
+            if (apiError.response?.status === 404) {
+                try {
+                    await softDeleteWithLegacyApi(user);
+                    setUsers((prev) => prev.filter((u) => u.id !== user.id));
+                    return;
+                } catch (fallbackError) {
+                    console.error("Erro ao deletar usuário pela rota legada:", fallbackError);
+                    const fallbackApiError = fallbackError as ApiError;
+                    alert(
+                        fallbackApiError.response?.data?.message ||
+                        fallbackApiError.response?.data?.error ||
+                        "Não foi possível excluir usuário pela API publicada."
+                    );
+                    return;
+                }
+            }
+
             const message =
                 apiError.response?.data?.message ||
                 apiError.response?.data?.error ||
-                (apiError.response?.status === 404
-                    ? "Rota de exclusão não encontrada na API. Publique a API atualizada."
-                    : "Erro ao deletar usuário");
+                "Erro ao deletar usuário";
 
             alert(message);
         } finally {
@@ -94,7 +132,7 @@ export default function ListUsers() {
 
         setDeleteNotice("");
         if (!window.confirm("Tem certeza que deseja deletar este usuário?")) return;
-        deleteUser(user.id);
+        deleteUser(user);
     }
 
     function handleSearch(e: ChangeEvent<HTMLInputElement>) {
