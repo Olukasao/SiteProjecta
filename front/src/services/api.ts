@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "https://projectaempreendimentos.com.br/api"
+  baseURL: import.meta.env.VITE_API_URL || "/api"
 });
 
 // 🔐 interceptor (envia token automaticamente)

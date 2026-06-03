@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useRef, memo, useCallback, type MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import sem_imagem from "../assets/sem-imagem.webp"
+import sem_imagem from "../assets/sem-imagem.webp";
 import homeHeader from "../assets/home-header.jpg";
 import homeHeader2 from "../assets/home-header2.jpg";
 import Header from "../components/Header";
@@ -95,7 +95,8 @@ const PropertyCard = memo(function PropertyCard({ imovel }: { imovel: Imovel }) 
           alt={imovel.titulo}
           decoding="async"
           onError={(e) => {
-            e.currentTarget.src = "/sem-imagem.png";
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = sem_imagem;
           }}
         />
         <span className="property-badge">{formatarTipo(imovel.tipo)}</span>

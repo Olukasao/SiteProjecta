@@ -14,6 +14,7 @@ import {
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { api } from "../services/api";
+import semImagem from "../assets/sem-imagem.webp";
 import "../styles/ImovelDetalhe.css";
 
 // ── Leaflet icon fix ──────────────────────────────────────────────────────────
@@ -93,7 +94,7 @@ export default function ImovelDetalhe() {
         document.title = `${data.titulo} | Imobiliário`;
 
         const imagens: string[] = Array.isArray(data.imagens) ? data.imagens : [];
-        setSelectedImg(imagens[0] || "");
+        setSelectedImg(imagens[0] || semImagem);
         setSelectedIdx(0);
 
         const cep = data?.cep || data?.endereco?.cep || "";
@@ -209,6 +210,10 @@ export default function ImovelDetalhe() {
             src={images[lightboxIdx]}
             alt={`Foto ${lightboxIdx + 1}`}
             onClick={e => e.stopPropagation()}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = semImagem;
+            }}
           />
 
           <button
@@ -229,9 +234,16 @@ export default function ImovelDetalhe() {
         <div className="left">
 
           {/* Main Image */}
-          <div className="main-image" onClick={() => openLightbox(selectedIdx)}>
-            <img src={selectedImg} alt={imovel.titulo} />
-            <div className="img-overlay-hint">🔍 Clique para ampliar</div>
+          <div className="main-image" onClick={() => images.length > 0 && openLightbox(selectedIdx)}>
+            <img
+              src={selectedImg || semImagem}
+              alt={imovel.titulo}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = semImagem;
+              }}
+            />
+            {images.length > 0 && <div className="img-overlay-hint">🔍 Clique para ampliar</div>}
             {imovel.tipo && <span className="badge-tipo">{imovel.tipo}</span>}
           </div>
 
@@ -255,6 +267,10 @@ export default function ImovelDetalhe() {
                     className={selectedImg === img ? "active" : ""}
                     onClick={() => selectImage(img, i)}
                     alt={`Miniatura ${i + 1}`}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = semImagem;
+                    }}
                   />
                 ))}
               </div>

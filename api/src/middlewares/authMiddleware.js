@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const db = require("../database/db");
+const { getJwtSecret } = require("../utils/security");
 
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -8,15 +9,18 @@ const authMiddleware = (req, res, next) => {
     return res.status(401).json({ error: "Sem token" });
   }
 
-  // 🔥 pega só o token (remove "Bearer ")
-  const token = authHeader.split(" ")[1];
+  const [scheme, token] = authHeader.split(" ");
 
-  if (!token) {
+  if (scheme !== "Bearer" || !token) {
     return res.status(401).json({ error: "Token mal formatado" });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "segredo");
+    const decoded = jwt.verify(token, getJwtSecret());
+
+    if (!decoded?.id) {
+      return res.status(401).json({ error: "Token inválido" });
+    }
 
     db.query(
       `
@@ -51,7 +55,7 @@ const authMiddleware = (req, res, next) => {
 };
 
 const requireAdmin = (req, res, next) => {
-  if (req.user?.role !== "admin") {
+  if (!["admin", "dev"].includes(req.user?.role)) {
     return res.status(403).json({ error: "Acesso restrito a administradores" });
   }
 

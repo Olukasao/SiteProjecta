@@ -1,22 +1,26 @@
+const path = require("path");
 const mysql = require("mysql2");
+const dotenv = require("dotenv");
 
-/*const connection = mysql.createConnection({
-  host: "localhost",
-  user: "projecta",
-  password: "project@123",
-  database: "projecta"
-});*/
+dotenv.config({ path: path.resolve(__dirname, "../../.env"), quiet: true });
+dotenv.config({ path: path.resolve(__dirname, "../../.env.local"), override: true, quiet: true });
 
+const requiredEnv = ["DB_HOST", "DB_USER", "DB_PASSWORD", "DB_NAME"];
+const missingEnv = requiredEnv.filter((key) => !process.env[key]);
+
+if (missingEnv.length > 0) {
+  throw new Error(`Variaveis de banco ausentes: ${missingEnv.join(", ")}`);
+}
 
 const pool = mysql.createPool({
-  host: "srv792.hstgr.io",
-  user: "u654914095_projecta",
-  password: "g32&vW1|6J/",
-  database: "u654914095_projecta",
-
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+  connectionLimit: Number(process.env.DB_CONNECTION_LIMIT) || 10,
+  queueLimit: 0
 });
 
 pool.getConnection((err, conn) => {
@@ -26,8 +30,7 @@ pool.getConnection((err, conn) => {
   }
 
   console.log("Banco conectado");
-
-  conn.release(); // 🔥 MUITO IMPORTANTE
+  conn.release();
 });
 
 module.exports = pool;

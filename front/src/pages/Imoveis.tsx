@@ -8,6 +8,7 @@ import {
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { api } from "../services/api";
+import semImagem from "../assets/sem-imagem.webp";
 import "../styles/Imoveis.css";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -339,9 +340,13 @@ export default function Imoveis() {
                     {/* Image */}
                     <div className="card-image">
                       <img
-                        src={imovel.imagens?.[0]}
+                        src={imovel.imagens?.[0] || semImagem}
                         alt={imovel.titulo}
                         loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = semImagem;
+                        }}
                       />
                       {imovel.status && (
                         <span className={`card-badge ${imovel.status}`}>

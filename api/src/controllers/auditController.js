@@ -23,8 +23,17 @@ const CREATE_AUDIT_TABLE_SQL = `
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 `;
 
+let auditTableReady = null;
+
 const ensureAuditTable = async () => {
-  await db.promise().query(CREATE_AUDIT_TABLE_SQL);
+  if (!auditTableReady) {
+    auditTableReady = db.promise().query(CREATE_AUDIT_TABLE_SQL).catch((error) => {
+      auditTableReady = null;
+      throw error;
+    });
+  }
+
+  await auditTableReady;
 };
 
 const getClientIp = (req) => {

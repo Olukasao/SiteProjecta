@@ -1,5 +1,34 @@
+const fs = require("fs");
+const path = require("path");
 const db = require("../database/db");
+const upload = require("../upload");
 const { logAudit } = require("./auditController");
+
+let propertyTrashColumnReady = null;
+let imageTableReady = null;
+let publicImoveisCache = null;
+const PUBLIC_IMOVEIS_CACHE_MS = Number(process.env.PUBLIC_IMOVEIS_CACHE_MS) || 30 * 1000;
+
+const ensurePropertyTrashColumn = async () => {
+  if (!propertyTrashColumnReady) {
+    propertyTrashColumnReady = (async () => {
+      const [columns] = await db.promise().query("SHOW COLUMNS FROM imoveis LIKE 'deleted_at'");
+
+      if (columns.length === 0) {
+        await db.promise().query("ALTER TABLE imoveis ADD COLUMN deleted_at TIMESTAMP NULL DEFAULT NULL");
+      }
+    })().catch((error) => {
+      propertyTrashColumnReady = null;
+      throw error;
+    });
+  }
+
+  await propertyTrashColumnReady;
+};
+
+const clearPublicImoveisCache = () => {
+  publicImoveisCache = null;
+};
 
 const parseJsonField = (value, fallback) => {
   if (!value) return fallback;
@@ -9,6 +38,114 @@ const parseJsonField = (value, fallback) => {
     return JSON.parse(value);
   } catch {
     return fallback;
+  }
+};
+
+const getPublicBaseUrl = (req) => {
+  const requestBaseUrl = req ? `${req.protocol}://${req.get("host")}` : "";
+  return String(process.env.BASE_URL || requestBaseUrl).replace(/\/+$/, "");
+};
+
+const normalizeImagePathForStorage = (value) => {
+  if (!value) return "";
+
+  let imageUrl = String(value).trim();
+  if (!imageUrl) return "";
+
+  if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+    try {
+      const parsedUrl = new URL(imageUrl);
+      imageUrl = parsedUrl.pathname + parsedUrl.search;
+    } catch {
+      return "";
+    }
+  }
+
+  if (imageUrl.startsWith("uploads/")) {
+    imageUrl = `/${imageUrl}`;
+  }
+
+  if (!imageUrl.startsWith("/uploads/imoveis/")) {
+    return "";
+  }
+
+  const sanitizedPath = imageUrl.split("?")[0].split("#")[0];
+  return sanitizedPath;
+};
+
+const normalizeImageUrl = (value, req) => {
+  if (typeof value !== "string") return "";
+
+  const imageUrl = value.trim();
+  if (!imageUrl) return "";
+
+  const baseUrl = getPublicBaseUrl(req);
+  if (!baseUrl) return imageUrl;
+
+  if (imageUrl.startsWith("/uploads/")) {
+    return `${baseUrl}${imageUrl}`;
+  }
+
+  if (imageUrl.startsWith("uploads/")) {
+    return `${baseUrl}/${imageUrl}`;
+  }
+
+  try {
+    const parsedUrl = new URL(imageUrl);
+    if (parsedUrl.pathname.startsWith("/uploads/")) {
+      return `${baseUrl}${parsedUrl.pathname}${parsedUrl.search}`;
+    }
+  } catch {
+    return imageUrl;
+  }
+
+  return imageUrl;
+};
+
+const splitImageUrls = (value, req) => {
+  if (!value) return [];
+
+  return String(value)
+    .split(",")
+    .map((url) => normalizeImageUrl(url, req))
+    .filter(Boolean);
+};
+
+const ensureImageTable = async () => {
+  if (!imageTableReady) {
+    imageTableReady = db.promise().query(`
+      CREATE TABLE IF NOT EXISTS imovel_imagens (
+        id INT NOT NULL AUTO_INCREMENT,
+        imovel_id INT NOT NULL,
+        url VARCHAR(255) NOT NULL,
+        principal TINYINT(1) DEFAULT 0,
+        ordem INT(11) DEFAULT 0,
+        PRIMARY KEY (id),
+        KEY imovel_id (imovel_id),
+        CONSTRAINT imovel_imagens_ibfk_1 FOREIGN KEY (imovel_id) REFERENCES imoveis (id) ON DELETE CASCADE
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `).catch((error) => {
+      imageTableReady = null;
+      throw error;
+    });
+  }
+
+  await imageTableReady;
+};
+
+const deleteImageFile = async (imageUrl) => {
+  const relativePath = normalizeImagePathForStorage(imageUrl);
+  if (!relativePath) return;
+
+  const filename = path.basename(relativePath);
+  const filePath = path.join(upload.uploadPath || path.resolve(__dirname, "../public/uploads/imoveis"), filename);
+
+  try {
+    if (fs.existsSync(filePath)) {
+      await fs.promises.unlink(filePath);
+    }
+  } catch (err) {
+    console.error("Erro ao remover arquivo de imagem:", err, filePath);
   }
 };
 
@@ -83,7 +220,9 @@ const buildImovelChanges = (before, after) => {
     }));
 };
 
-const criarImovel = (req, res) => {
+const criarImovel = async (req, res) => {
+  let connection;
+
   try {
     console.log("BODY:", req.body);
     console.log("FILES:", req.files);
@@ -127,16 +266,18 @@ const criarImovel = (req, res) => {
     // =========================
     // 🔥 IMAGENS
     // =========================
-    const baseUrl = process.env.BASE_URL;
+    
 
-    const imagens = req.files?.map(file =>
-      `${baseUrl}/uploads/${file.filename}`
+    const imagens = req.files?.map((file) =>
+      `/uploads/imoveis/${file.filename}`
     ) || [];
 
     // =========================
     // 🔥 SLUG
     // =========================
-    const slug = (nome || "sem-nome")
+    const nomeSafe = (nome || "").trim() || "sem-nome";
+
+    const slug = nomeSafe
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
@@ -147,21 +288,21 @@ const criarImovel = (req, res) => {
     const lat = endereco?.lat || null;
     const lng = endereco?.lng || null;
 
-    // =========================
-    // 🔥 INSERT IMOVEL (AGORA COMPLETO)
-    // =========================
-    db.query(
-      `INSERT INTO imoveis 
+    connection = await db.promise().getConnection();
+    await connection.beginTransaction();
+
+    const [result] = await connection.query(
+      `INSERT INTO imoveis
       (
         titulo, slug, descricao, preco, tipo, status,
         cidade, bairro, endereco, cep, lat, lng,
         preco_condominio, preco_iptu, diferenciais
-      ) 
+      )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        nome,
+        nomeSafe,
         slug,
-        descricao,
+        descricao || "",
         preco,
         tipo,
         status,
@@ -174,86 +315,90 @@ const criarImovel = (req, res) => {
         precoCondominio,
         precoIptu,
         JSON.stringify(diferenciais)
-      ],
-      (err, result) => {
-        if (err) {
-          console.error("Erro imovel:", err);
-          return res.status(500).json(err);
-        }
-
-        const imovelId = result.insertId;
-
-        // =========================
-        // 🔥 DETALHES (COM SUITES)
-        // =========================
-        db.query(
-          `INSERT INTO imovel_detalhes 
-          (imovel_id, quartos, suites, banheiros, vagas, area) 
-          VALUES (?, ?, ?, ?, ?, ?)`,
-          [
-            imovelId,
-            Number(detalhes.quartos) || 0,
-            Number(detalhes.suites) || 0,
-            Number(detalhes.banheiros) || 0,
-            Number(detalhes.vagas) || 0,
-            Number(detalhes.area) || 0
-          ]
-        );
-
-        // =========================
-        // 🔥 IMAGENS
-        // =========================
-        if (imagens.length > 0) {
-          const values = imagens.map(img => [imovelId, img]);
-
-          db.query(
-            `INSERT INTO imovel_imagens (imovel_id, url) VALUES ?`,
-            [values],
-            (err3) => {
-              if (err3) {
-                console.error("Erro imagens:", err3);
-              }
-            }
-          );
-        }
-
-        logAudit(req, {
-          action: "create",
-          resourceType: "imovel",
-          resourceId: imovelId,
-          resourceTitle: nome,
-          details: {
-            after: {
-              id: imovelId,
-              titulo: nome,
-              preco,
-              tipo,
-              status,
-              cidade: endereco.cidade || "",
-              bairro: endereco.bairro || "",
-              cep,
-              imagens: imagens.length
-            }
-          }
-        });
-
-        return res.json({
-          message: "Imóvel criado com sucesso",
-          id: imovelId
-        });
-      }
+      ]
     );
 
+    const imovelId = result.insertId;
+
+    await connection.query(
+      `INSERT INTO imovel_detalhes
+      (imovel_id, quartos, suites, banheiros, vagas, area)
+      VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        imovelId,
+        Number(detalhes.quartos) || 0,
+        Number(detalhes.suites) || 0,
+        Number(detalhes.banheiros) || 0,
+        Number(detalhes.vagas) || 0,
+        Number(detalhes.area) || 0
+      ]
+    );
+
+    if (imagens.length > 0) {
+      const values = imagens.map(img => [imovelId, img]);
+      await connection.query(
+        `INSERT INTO imovel_imagens (imovel_id, url) VALUES ?`,
+        [values]
+      );
+    }
+
+    await connection.commit();
+    connection.release();
+    connection = null;
+    clearPublicImoveisCache();
+
+    const afterSnapshot = await getImovelSnapshot(imovelId);
+
+    await logAudit(req, {
+      action: "create",
+      resourceType: "imovel",
+      resourceId: imovelId,
+      resourceTitle: afterSnapshot?.titulo || nomeSafe,
+      details: {
+        after: afterSnapshot || {
+          id: imovelId,
+          titulo: nomeSafe,
+          preco,
+          tipo,
+          status,
+          cidade: endereco.cidade || "",
+          bairro: endereco.bairro || "",
+          cep,
+          imagens
+        }
+      }
+    });
+
+    return res.json({
+      message: "Imóvel criado com sucesso",
+      id: imovelId
+    });
   } catch (err) {
+    if (connection) {
+      try {
+        await connection.rollback();
+      } catch (rollbackErr) {
+        console.error("Erro ao desfazer cadastro do imóvel:", rollbackErr);
+      }
+      connection.release();
+    }
+
     console.error("ERRO GERAL:", err);
-    res.status(500).json({ error: "Erro ao processar dados" });
+    return res.status(500).json({ error: "Erro ao processar dados" });
   }
 };
 
 // ✅ LISTAR
-const getImoveis = (req, res) => {
+const getImoveis = async (req, res) => {
+  try {
+    await ensurePropertyTrashColumn();
+  } catch (err) {
+    console.error("Erro ao preparar lixeira:", err);
+    return res.status(500).json({ error: "Erro ao carregar imóveis" });
+  }
+
   const sql = `
-    SELECT 
+    SELECT
       i.*,
       d.quartos,
       d.banheiros,
@@ -263,27 +408,46 @@ const getImoveis = (req, res) => {
     FROM imoveis i
     LEFT JOIN imovel_detalhes d ON d.imovel_id = i.id
     LEFT JOIN imovel_imagens img ON img.imovel_id = i.id
+    WHERE i.deleted_at IS NULL
     GROUP BY i.id
   `;
+
+  if (publicImoveisCache && publicImoveisCache.expiresAt > Date.now()) {
+    const data = publicImoveisCache.rows.map((item) => ({
+      ...item,
+      imagens: splitImageUrls(item.imagens, req)
+    }));
+
+    return res.json(data);
+  }
 
   db.query(sql, (err, results) => {
     if (err) return res.status(500).json(err);
 
+    publicImoveisCache = {
+      rows: results,
+      expiresAt: Date.now() + PUBLIC_IMOVEIS_CACHE_MS
+    };
+
     const data = results.map((item) => ({
       ...item,
-      imagens: item.imagens ? item.imagens.split(",") : []
+      imagens: splitImageUrls(item.imagens, req)
     }));
 
     res.json(data);
   });
 };
 
-// ✅ DETALHE
-const getImovelById = (req, res) => {
-  const id = req.params.id;
+const getDeletedImoveis = async (req, res) => {
+  try {
+    await ensurePropertyTrashColumn();
+  } catch (err) {
+    console.error("Erro ao preparar lixeira:", err);
+    return res.status(500).json({ error: "Erro ao carregar lixeira" });
+  }
 
   const sql = `
-    SELECT 
+    SELECT
       i.*,
       d.quartos,
       d.suites,
@@ -294,7 +458,47 @@ const getImovelById = (req, res) => {
     FROM imoveis i
     LEFT JOIN imovel_detalhes d ON d.imovel_id = i.id
     LEFT JOIN imovel_imagens img ON img.imovel_id = i.id
-    WHERE i.id = ?
+    WHERE i.deleted_at IS NOT NULL
+    GROUP BY i.id
+    ORDER BY i.deleted_at DESC
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json(err);
+
+    const data = results.map((item) => ({
+      ...item,
+      imagens: splitImageUrls(item.imagens, req)
+    }));
+
+    res.json(data);
+  });
+};
+
+// ✅ DETALHE
+const getImovelById = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    await ensurePropertyTrashColumn();
+  } catch (err) {
+    console.error("Erro ao preparar lixeira:", err);
+    return res.status(500).json({ error: "Erro ao carregar imóvel" });
+  }
+
+  const sql = `
+    SELECT
+      i.*,
+      d.quartos,
+      d.suites,
+      d.banheiros,
+      d.vagas,
+      d.area,
+      GROUP_CONCAT(img.url) as imagens
+    FROM imoveis i
+    LEFT JOIN imovel_detalhes d ON d.imovel_id = i.id
+    LEFT JOIN imovel_imagens img ON img.imovel_id = i.id
+    WHERE i.id = ? AND i.deleted_at IS NULL
     GROUP BY i.id
   `;
 
@@ -314,12 +518,10 @@ const getImovelById = (req, res) => {
       ...imovel,
 
       // 🔥 imagens array
-      imagens: imovel.imagens ? imovel.imagens.split(",") : [],
+      imagens: splitImageUrls(imovel.imagens, req),
 
       // 🔥 diferenciais array
-      diferenciais: imovel.diferenciais
-        ? JSON.parse(imovel.diferenciais)
-        : [],
+      diferenciais: parseJsonField(imovel.diferenciais, []),
 
       // 🔥 padronização pro front (IMPORTANTE)
       precoCondominio: imovel.preco_condominio || 0,
@@ -332,20 +534,28 @@ const deletarImovel = async (req, res) => {
   const id = req.params.id;
 
   try {
+    await ensurePropertyTrashColumn();
+
     const before = await getImovelSnapshot(id);
 
     if (!before) {
       return res.status(404).json({ error: "Imóvel não encontrado" });
     }
 
-    await db.promise().query("DELETE FROM imovel_imagens WHERE imovel_id = ?", [id]);
-    await db.promise().query("DELETE FROM imovel_detalhes WHERE imovel_id = ?", [id]);
+    if (before.deleted_at) {
+      return res.status(400).json({ error: "Imóvel já está na lixeira" });
+    }
 
-    const [result] = await db.promise().query("DELETE FROM imoveis WHERE id = ?", [id]);
+    const [result] = await db.promise().query(
+      "UPDATE imoveis SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL",
+      [id]
+    );
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Imóvel não encontrado" });
     }
+
+    clearPublicImoveisCache();
 
     await logAudit(req, {
       action: "delete",
@@ -357,10 +567,57 @@ const deletarImovel = async (req, res) => {
       }
     });
 
-    return res.json({ message: "Deletado com sucesso" });
+    return res.json({ message: "Imóvel movido para a lixeira" });
   } catch (err) {
     console.error("Erro ao deletar imóvel:", err);
     return res.status(500).json({ error: "Erro ao deletar imóvel" });
+  }
+};
+
+const restaurarImovel = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    await ensurePropertyTrashColumn();
+
+    const before = await getImovelSnapshot(id);
+
+    if (!before) {
+      return res.status(404).json({ error: "Imóvel não encontrado" });
+    }
+
+    if (!before.deleted_at) {
+      return res.status(400).json({ error: "Imóvel não está na lixeira" });
+    }
+
+    const [result] = await db.promise().query(
+      "UPDATE imoveis SET deleted_at = NULL WHERE id = ? AND deleted_at IS NOT NULL",
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Imóvel não encontrado" });
+    }
+
+    clearPublicImoveisCache();
+
+    const after = await getImovelSnapshot(id);
+
+    await logAudit(req, {
+      action: "restore",
+      resourceType: "imovel",
+      resourceId: Number(id),
+      resourceTitle: after?.titulo || before.titulo,
+      details: {
+        before,
+        after
+      }
+    });
+
+    return res.json({ message: "Imóvel restaurado com sucesso" });
+  } catch (err) {
+    console.error("Erro ao restaurar imóvel:", err);
+    return res.status(500).json({ error: "Erro ao restaurar imóvel" });
   }
 };
 
@@ -370,6 +627,7 @@ const atualizarImovel = async (req, res) => {
   let beforeSnapshot = null;
 
   try {
+    await ensurePropertyTrashColumn();
     beforeSnapshot = await getImovelSnapshot(id);
   } catch (error) {
     console.error("Erro ao carregar auditoria do imóvel:", error);
@@ -378,6 +636,10 @@ const atualizarImovel = async (req, res) => {
 
   if (!beforeSnapshot) {
     return res.status(404).json({ error: "Imóvel não encontrado" });
+  }
+
+  if (beforeSnapshot.deleted_at) {
+    return res.status(400).json({ error: "Restaure o imóvel antes de editar" });
   }
 
   const {
@@ -439,8 +701,6 @@ const atualizarImovel = async (req, res) => {
 
   // =========================
   // IMAGENS — combina existentes + novas
-  // =========================
-  const baseUrl = process.env.BASE_URL || "http://localhost:3500";
 
   // 1️⃣ URLs que já existiam (o frontend manda de volta as que quer manter)
   let imagensExistentes = [];
@@ -454,19 +714,29 @@ const atualizarImovel = async (req, res) => {
     }
   }
 
+  const imagensExistentesRel = imagensExistentes
+    .map(normalizeImagePathForStorage)
+    .filter(Boolean);
+
   // 2️⃣ Arquivos novos enviados via upload
   const imagensNovas = req.files?.length > 0
-    ? req.files.map(file => `${baseUrl}/uploads/${file.filename}`)
+    ? req.files.map((file) => `/uploads/imoveis/${file.filename}`)
     : [];
 
   // 3️⃣ Junta tudo e filtra valores inválidos
-  const cleanImgs = [...imagensExistentes, ...imagensNovas].filter(
-    img => typeof img === "string" && img.trim()
-  );
+  const cleanImgs = [...imagensExistentesRel, ...imagensNovas]
+    .filter(Boolean);
+
+  const previousImages = (beforeSnapshot.imagens || [])
+    .map(normalizeImagePathForStorage)
+    .filter(Boolean);
+
+  const imagesToRemove = previousImages.filter((img) => !cleanImgs.includes(img));
+
+  await Promise.all(imagesToRemove.map(deleteImageFile));
 
   // =========================
   // ENDEREÇO
-  // =========================
   const cep = endereco?.cep || "";
   const lat = endereco?.lat || null;
   const lng = endereco?.lng || null;
@@ -487,6 +757,8 @@ const atualizarImovel = async (req, res) => {
         }
       });
 
+      clearPublicImoveisCache();
+
       return res.json({ message: "Imóvel atualizado com sucesso" });
     } catch (error) {
       console.error("Erro ao registrar auditoria:", error);
@@ -500,7 +772,7 @@ const atualizarImovel = async (req, res) => {
   // UPDATE IMOVEL
   // =========================
   db.query(
-    `UPDATE imoveis SET 
+    `UPDATE imoveis SET
       titulo=?,
       slug=?,
       descricao=?,
@@ -545,7 +817,7 @@ const atualizarImovel = async (req, res) => {
       // UPDATE DETALHES
       // =========================
       db.query(
-        `UPDATE imovel_detalhes SET 
+        `UPDATE imovel_detalhes SET
           quartos=?,
           suites=?,
           banheiros=?,
@@ -600,11 +872,50 @@ const atualizarImovel = async (req, res) => {
   );
 };
 
+const deleteImovelImagem = async (req, res) => {
+  const id = req.params.id;
+  const imageId = req.params.imageId;
+
+  try {
+    const [results] = await db.promise().query(
+      "SELECT url FROM imovel_imagens WHERE id = ? AND imovel_id = ?",
+      [imageId, id]
+    );
+
+    if (!results.length) {
+      return res.status(404).json({ error: "Imagem não encontrada" });
+    }
+
+    const imageUrl = results[0].url;
+
+    const [result] = await db.promise().query(
+      "DELETE FROM imovel_imagens WHERE id = ? AND imovel_id = ?",
+      [imageId, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Imagem não encontrada" });
+    }
+
+    await deleteImageFile(imageUrl);
+    clearPublicImoveisCache();
+
+    return res.json({ message: "Imagem removida com sucesso" });
+  } catch (err) {
+    console.error("Erro ao remover imagem do imóvel:", err);
+    return res.status(500).json({ error: "Erro ao remover imagem" });
+  }
+};
 
 module.exports = {
+  ensurePropertyTrashColumn,
+  ensureImageTable,
   criarImovel,
   getImoveis,
+  getDeletedImoveis,
   getImovelById,
   deletarImovel,
-  atualizarImovel
+  restaurarImovel,
+  atualizarImovel,
+  deleteImovelImagem
 };
